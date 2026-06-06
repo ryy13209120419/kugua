@@ -1,0 +1,3631 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>TradeLens Pro</title>
+<style>
+/* ===== CSS Reset & Variables ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f23;--bg2:#1a1a2e;--bg3:#16213e;--card:#1e2a4a;--card2:#25345a;--text:#e8e8f0;--text2:#a0a0c0;--text3:#606080;--primary:#e94560;--primary2:#ff6b81;--accent:#16c79a;--accent2:#1de9b6;--profit:#e94560;--loss:#4fc3f7;--border:#2a3a5e;--shadow:rgba(0,0,0,0.4);--radius:12px;--radius-sm:8px;--nav-bg:#12122a;--nav-active:#e94560;--input-bg:#12122a;--hover-bg:#2a3a5e;--green-badge:#4fc3f7;--red-badge:#e94560;--yellow-badge:#ffd54f;--orange-badge:#ff8a65}
+.light{--bg:#f5f5fa;--bg2:#ffffff;--bg3:#eef0f7;--card:#ffffff;--card2:#f0f2f8;--text:#1a1a2e;--text2:#505070;--text3:#9090a8;--border:#d0d4e0;--shadow:rgba(0,0,0,0.08);--nav-bg:#ffffff;--input-bg:#f0f2f8;--hover-bg:#e0e4ee;--profit:#e53935;--loss:#1e88e5}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
+/* ===== Layout ===== */
+.app-container{max-width:1200px;margin:0 auto;padding:16px 16px 90px}
+.page{display:none}.page.active{display:block}
+/* ===== Navigation ===== */
+.bottom-nav{position:fixed;bottom:12px;left:8px;right:8px;background:var(--nav-bg);display:flex;justify-content:space-around;align-items:center;padding:8px 4px calc(8px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border);border-radius:16px;z-index:1000;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 -2px 16px var(--shadow)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 16px;border:none;background:none;color:var(--text3);font-size:12px;cursor:pointer;transition:color .2s;min-width:64px}
+.nav-item svg{width:26px;height:26px;fill:currentColor;transition:fill .2s}
+.nav-item.active{color:var(--nav-active)}
+.nav-item span{white-space:nowrap;font-weight:500}
+/* ===== Cards ===== */
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--border);box-shadow:0 2px 8px var(--shadow)}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.card-title{font-size:14px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+/* ===== Stats ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{background:var(--card2);border-radius:var(--radius-sm);padding:14px;text-align:center;border:1px solid var(--border)}
+.stat-value{font-size:22px;font-weight:700;margin:4px 0}
+.stat-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.stat-value.profit{color:var(--profit)}.stat-value.loss{color:var(--loss)}
+/* ===== Buttons ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary2);transform:translateY(-1px)}
+.btn-secondary{background:var(--bg2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--hover-bg)}
+.btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-danger{background:#c62828;color:#fff}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:50%;background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .2s}
+.btn-icon:hover{background:var(--hover-bg);color:var(--text)}
+/* ===== Form ===== */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+.form-input,.form-select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--input-bg);color:var(--text);font-size:14px;transition:border .2s}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--primary)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--input-bg);color:var(--text);font-size:14px;min-height:80px;resize:vertical;font-family:inherit}
+/* ===== Checkbox Grid ===== */
+.checkbox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px;margin:6px 0}
+.checkbox-item{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--bg2);border-radius:6px;border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:12px}
+.checkbox-item input{display:none}
+.checkbox-item.active{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 15%,var(--bg2))}
+.checkbox-item .emoji{font-size:14px}
+/* ===== Grade Badge ===== */
+.grade-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:13px;font-weight:700;color:#fff}
+.grade-A{background:linear-gradient(135deg,#4fc3f7,#0288d1)}.grade-B{background:linear-gradient(135deg,#66bb6a,#388e3c)}.grade-C{background:linear-gradient(135deg,#ffd54f,#f57f17)}.grade-D{background:linear-gradient(135deg,#e94560,#c62828)}
+/* ===== Trade List ===== */
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.filter-bar .form-input,.filter-bar .form-select{width:auto;min-width:100px;flex:1;padding:8px 10px;font-size:13px}
+.trade-item{background:var(--card2);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s}
+.trade-item:hover{border-color:var(--primary);transform:translateX(2px)}
+.trade-item .row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.trade-item .symbol{font-weight:700;font-size:16px}
+.trade-item .direction{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600}
+.direction-long{background:color-mix(in srgb,var(--profit) 20%,transparent);color:var(--profit)}
+.direction-short{background:color-mix(in srgb,var(--loss) 20%,transparent);color:var(--loss)}
+.trade-item .row2{display:flex;justify-content:space-between;font-size:12px;color:var(--text2)}
+.trade-item .pnl{font-weight:700;font-size:15px}
+/* ===== Calendar ===== */
+.calendar-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.calendar-header{text-align:center;font-size:11px;color:var(--text3);padding:4px 0;font-weight:600}
+.calendar-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;font-size:12px;cursor:pointer;transition:all .2s;position:relative;min-height:40px}
+.calendar-day:hover{background:var(--hover-bg)}
+.calendar-day.other-month{opacity:.3}
+.calendar-day.today{border:2px solid var(--primary)}
+.calendar-day .day-pnl{font-size:8px;font-weight:600;margin-top:1px}
+.calendar-day .day-pnl.profit{color:var(--profit)}.calendar-day .day-pnl.loss{color:var(--loss)}
+.calendar-day.has-trades{font-weight:700}
+.calendar-day .day-num{font-size:13px}
+/* ===== Settings ===== */
+.settings-card{margin-bottom:16px}
+.settings-card .card{padding:16px;margin-bottom:8px}
+.settings-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.settings-row:last-child{border-bottom:none}
+.settings-row .label{font-size:14px;font-weight:500}
+.settings-row .desc{font-size:11px;color:var(--text3);margin-top:2px}
+/* ===== Toggle Switch ===== */
+.toggle{position:relative;width:48px;height:26px;background:var(--border);border-radius:13px;cursor:pointer;transition:background .3s;display:inline-block;flex-shrink:0}
+.toggle.active{background:var(--primary)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .3s}
+.toggle.active::after{transform:translateX(22px)}
+/* ===== CSV Upload ===== */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:30px;text-align:center;cursor:pointer;transition:all .3s;background:var(--bg2)}
+.upload-zone.dragover{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,var(--bg2))}
+.upload-zone .upload-icon{font-size:40px;margin-bottom:8px;display:block}
+.upload-zone .upload-text{font-size:14px;color:var(--text2)}
+.upload-zone .upload-hint{font-size:11px;color:var(--text3);margin-top:4px}
+/* ===== Debug Section ===== */
+.debug-section{background:var(--bg2);border-radius:var(--radius-sm);padding:12px;margin-top:8px;font-family:'Courier New',monospace;font-size:12px;line-height:1.6;max-height:300px;overflow:auto;white-space:pre-wrap;border:1px solid var(--border)}
+.debug-section.success{border-color:var(--accent)}
+.debug-section.error{border-color:var(--profit)}
+/* ===== Modal ===== */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal-content{background:var(--card);border-radius:var(--radius);width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:20px;border:1px solid var(--border)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-header h3{font-size:18px}
+.modal-close{background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;padding:4px}
+/* ===== Toast ===== */
+.toast-container{position:fixed;top:16px;right:16px;z-index:3000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:var(--radius-sm);font-size:14px;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.3);animation:slideIn .3s ease;max-width:360px}
+.toast.success{background:var(--accent)}.toast.error{background:var(--profit)}.toast.info{background:var(--bg3)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+/* ===== Page Header ===== */
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:8px 0}
+.page-header h1{font-size:22px;font-weight:700}
+.page-header .subtitle{font-size:12px;color:var(--text3);margin-top:2px}
+/* ===== Section Tabs ===== */
+.section-tabs{display:flex;gap:4px;margin-bottom:12px;background:var(--bg2);padding:4px;border-radius:var(--radius-sm)}
+.section-tab{padding:8px 16px;border:none;background:transparent;color:var(--text2);font-size:13px;cursor:pointer;border-radius:6px;transition:all .2s;font-weight:500}
+.section-tab.active{background:var(--card2);color:var(--text)}
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+/* ===== Responsive ===== */
+@media(max-width:480px){.stats-grid{grid-template-columns:repeat(2,1fr)}.form-row{grid-template-columns:1fr}.filter-bar .form-input,.filter-bar .form-select{min-width:80px;flex:none;width:auto}}
+/* ===== Chart ===== */
+.chart-container{position:relative;width:100%;height:200px;margin:12px 0}
+.chart-bar{position:absolute;bottom:0;border-radius:4px 4px 0 0;transition:height .5s;min-width:4px}
+/* ===== AI Analysis Output ===== */
+.ai-output{background:var(--bg2);border-radius:var(--radius-sm);padding:14px;line-height:1.7;font-size:13px;white-space:pre-wrap;margin-top:8px;border:1px solid var(--border);max-height:400px;overflow-y:auto}
+.ai-output .grade{display:inline-block;margin:8px 0;font-size:16px}
+/* ===== Image Preview ===== */
+.image-preview{width:80px;height:80px;border-radius:8px;object-fit:cover;border:1px solid var(--border);cursor:pointer}
+.image-preview-container{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+/* ===== Exchange Badge ===== */
+.exchange-badge{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bg2);color:var(--text3);border:1px solid var(--border)}
+/* ===== AI Analysis Page ===== */
+.analysis-upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:30px;text-align:center;cursor:pointer;transition:all .3s;background:var(--bg2);margin-bottom:12px}
+.analysis-upload-zone.dragover{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,var(--bg2))}
+.analysis-upload-zone .upload-icon{font-size:48px;margin-bottom:8px;display:block}
+.analysis-upload-zone .upload-text{font-size:14px;color:var(--text2)}
+.analysis-upload-zone .upload-hint{font-size:11px;color:var(--text3);margin-top:4px}
+.analysis-preview-img{width:100%;max-height:300px;object-fit:contain;border-radius:8px;border:1px solid var(--border);margin-top:8px}
+.analysis-framework-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:8px 0}
+.analysis-framework-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg2);border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:13px}
+.analysis-framework-item input{display:none}
+.analysis-framework-item.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,var(--bg2))}
+.analysis-framework-item .fw-icon{font-size:18px}
+.analysis-result-card{background:var(--card2);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;border:1px solid var(--border)}
+.analysis-result-card .result-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.analysis-result-card .result-value{font-size:14px;font-weight:500;line-height:1.6}
+.analysis-result-card .result-value.direction-long{color:var(--profit)}
+.analysis-result-card .result-value.direction-short{color:var(--loss)}
+.analysis-result-card .result-value.sideways{color:var(--text2)}
+.analysis-result-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin:2px}
+.analysis-result-tag.ict{background:color-mix(in srgb,#7c4dff 20%,transparent);color:#b388ff;border:1px solid #7c4dff}
+.analysis-result-tag.pa{background:color-mix(in srgb,#00bcd4 20%,transparent);color:#4dd0e1;border:1px solid #00bcd4}
+.analysis-result-tag.smc{background:color-mix(in srgb,#ff6f00 20%,transparent);color:#ffb74d;border:1px solid #ff6f00}
+.analysis-result-tag.harmonic{background:color-mix(in srgb,#e91e63 20%,transparent);color:#f48fb1;border:1px solid #e91e63}
+.analysis-history-item{padding:12px;background:var(--bg2);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s}
+.analysis-history-item:hover{border-color:var(--accent)}
+.analysis-history-item .h-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.analysis-history-item .h-pair{font-weight:600;font-size:14px}
+.analysis-history-item .h-date{font-size:11px;color:var(--text3)}
+.analysis-history-item .h-dir{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600}
+.analysis-history-item .h-summary{font-size:12px;color:var(--text2);margin-top:4px}
+.analysis-loading{text-align:center;padding:32px;color:var(--text2)}
+.analysis-loading .spinner{display:inline-block;width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+  <!-- ===== DASHBOARD PAGE ===== -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div>
+        <h1>📊 交易仪表盘</h1>
+        <div class="subtitle"><span id="dash-period">全部时间</span> · <span id="dash-trade-count">0</span> 笔交易 · <span id="dash-pending-count" style="color:var(--orange-badge);font-weight:600">0</span> 待复盘</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span id="mode-indicator" style="font-size:10px;padding:2px 8px;border-radius:10px;color:#fff;font-weight:500;display:none"></span>
+        <button class="btn btn-sm btn-secondary" onclick="showPage('settings')">⚙️</button>
+      </div>
+    </div>
+    <div class="stats-grid" id="dash-stats"></div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">📈 月度盈亏</span></div>
+      <div class="chart-container" id="dash-chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">🏆 最近交易</span></div>
+      <div id="dash-recent-trades"></div>
+    </div>
+  </div>
+
+  <!-- ===== TRADE LIST PAGE ===== -->
+  <div class="page" id="page-trades">
+    <div class="page-header">
+      <div><h1>📋 交易列表</h1><div class="subtitle"><span id="trade-count">0</span> 条记录</div></div>
+      <button class="btn btn-primary btn-sm" onclick="openNewTrade()">+ 新建</button>
+    </div>
+    <div class="card">
+      <div class="filter-bar" id="filter-bar">
+        <input class="form-input" id="filter-search" placeholder="🔍 搜索品种..." oninput="renderTradeList()">
+        <select class="form-select" id="filter-symbol" onchange="renderTradeList()"><option value="">全部品种</option></select>
+        <select class="form-select" id="filter-direction" onchange="renderTradeList()"><option value="">方向</option><option value="Long">做多</option><option value="Short">做空</option></select>
+        <select class="form-select" id="filter-result" onchange="renderTradeList()"><option value="">结果</option><option value="win">盈利</option><option value="loss">亏损</option></select>
+        <select class="form-select" id="filter-exchange" onchange="renderTradeList()"><option value="">交易所</option><option value="Binance">Binance</option><option value="OKX">OKX</option><option value="Other">其他</option></select>
+        <select class="form-select" id="filter-product" onchange="renderTradeList()"><option value="">产品类型</option><option value="永续合约">永续合约</option><option value="交割合约">交割合约</option><option value="现货">现货</option><option value="期权">期权</option></select>
+        <select class="form-select" id="filter-review" onchange="renderTradeList()"><option value="">复盘状态</option><option value="pending">待复盘</option><option value="reviewed">已复盘</option></select>
+        <input class="form-input" id="filter-date-from" type="date" onchange="renderTradeList()" style="min-width:120px" placeholder="开始日期">
+        <input class="form-input" id="filter-date-to" type="date" onchange="renderTradeList()" style="min-width:120px" placeholder="结束日期">
+      </div>
+    </div>
+    <div id="trade-list-container"></div>
+  </div>
+
+  <!-- ===== CALENDAR PAGE ===== -->
+  <div class="page" id="page-calendar">
+    <div class="page-header">
+      <div><h1>📅 日历视图</h1><div class="subtitle">按日查看盈亏</div></div>
+    </div>
+    <div class="card">
+      <div class="calendar-nav">
+        <button class="btn btn-sm btn-secondary" onclick="changeMonth(-1)">◀</button>
+        <span id="calendar-title" style="font-size:16px;font-weight:600">2025年1月</span>
+        <button class="btn btn-sm btn-secondary" onclick="changeMonth(1)">▶</button>
+      </div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+      <div style="margin-top:12px;text-align:center;font-size:12px;color:var(--text2)">
+        月盈亏: <strong><span id="calendar-month-pnl" style="color:var(--text)">0.00</span></strong>
+        &nbsp;&nbsp;|&nbsp;&nbsp;交易天数: <span id="calendar-trade-days">0</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">📋 当日明细</span></div>
+      <div id="calendar-day-detail"><div style="color:var(--text3);text-align:center;padding:16px">点击日期查看详情</div></div>
+    </div>
+  </div>
+
+  <!-- ===== AI ANALYSIS PAGE ===== -->
+  <div class="page" id="page-analysis">
+    <div class="page-header">
+      <div>
+        <h1>📊 AI 智能市场分析</h1>
+        <div class="subtitle">CoinGlass · Jin10 · CoinGecko · AI 实时解读</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-accent btn-sm" onclick="refreshAIAnalysis()" id="ai-refresh-btn">🔄 刷新分析</button>
+        <button class="btn btn-sm btn-secondary" onclick="showPage('settings')">⚙️</button>
+      </div>
+    </div>
+
+    <div class="card"><div id="ai-sources" style="font-size:12px;color:var(--text3)">💡 点击「刷新分析」获取实时数据</div></div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">📊 大盘概况</span><span id="ai-time" style="font-size:11px;color:var(--text3)"></span></div>
+      <div id="ai-overview"><div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">点击刷新获取数据</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">📈 走势预测</span></div>
+      <div id="ai-trend"><div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">AI 分析将在此展示</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">⚡ 异动监测</span></div>
+      <div id="ai-volatility"><div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">AI 分析将在此展示</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">🎯 机会提示</span></div>
+      <div id="ai-opportunity"><div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">AI 分析将在此展示</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">📋 具体点位与建议</span></div>
+      <div id="ai-levels"><div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">AI 分析将在此展示</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📜 分析历史</span>
+        <button class="btn btn-sm btn-secondary" onclick="clearAnalysisHistory()">清空</button>
+      </div>
+      <div id="ai-history"><div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">暂无记录</div></div>
+    </div>
+  </div>
+
+<!-- ===== NEW/EDIT TRADE PAGE (Modal) ===== -->
+  <div class="modal-overlay" id="trade-modal" style="display:none">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="trade-modal-title">新建交易</h3>
+        <button class="modal-close" onclick="closeTradeModal()">✕</button>
+      </div>
+      <div id="trade-form">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">品种</label><input class="form-input" id="t-form-symbol" placeholder="BTCUSDT"></div>
+          <div class="form-group"><label class="form-label">方向</label><select class="form-select" id="t-form-direction"><option value="Long">做多 (Long)</option><option value="Short">做空 (Short)</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">入场价格</label><input class="form-input" id="t-form-entry" type="number" step="any" placeholder="0.00"></div>
+          <div class="form-group"><label class="form-label">出场价格</label><input class="form-input" id="t-form-exit" type="number" step="any" placeholder="0.00"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">数量</label><input class="form-input" id="t-form-qty" type="number" step="any" placeholder="0.00"></div>
+          <div class="form-group"><label class="form-label">盈亏 (USD)</label><input class="form-input" id="t-form-pnl" type="number" step="any" placeholder="0.00"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">交易所</label><select class="form-select" id="t-form-exchange"><option value="Binance">Binance</option><option value="OKX">OKX</option><option value="Other">其他</option></select></div>
+          <div class="form-group"><label class="form-label">产品类型</label><select class="form-select" id="t-form-product"><option value="永续合约">永续合约</option><option value="交割合约">交割合约</option><option value="现货">现货</option><option value="期权">期权</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">开仓时间</label><input class="form-input" id="t-form-open-date" type="datetime-local"></div>
+          <div class="form-group"><label class="form-label">平仓时间</label><input class="form-input" id="t-form-close-date" type="datetime-local"></div>
+        </div>
+        <div class="form-group"><label class="form-label">备注</label><textarea class="form-textarea" id="t-form-notes" placeholder="交易逻辑、复盘思考..."></textarea></div>
+        
+        <!-- Signals -->
+        <div class="form-group">
+          <label class="form-label">📡 交易信号</label>
+          <div class="checkbox-grid" id="signals-grid">
+            <label class="checkbox-item"><input type="checkbox" value="BOS"><span class="emoji">🏗️</span> BOS (结构突破)</label>
+            <label class="checkbox-item"><input type="checkbox" value="CHoCH"><span class="emoji">🔄</span> CHoCH (趋势转变)</label>
+            <label class="checkbox-item"><input type="checkbox" value="FVG"><span class="emoji">🔲</span> FVG (公平价值缺口)</label>
+            <label class="checkbox-item"><input type="checkbox" value="IFVG"><span class="emoji">🔳</span> IFVG (反转价值缺口)</label>
+            <label class="checkbox-item"><input type="checkbox" value="Order Block"><span class="emoji">🧱</span> Order Block (订单块)</label>
+            <label class="checkbox-item"><input type="checkbox" value="MSS"><span class="emoji">🔄</span> MSS (市场结构转变)</label>
+            <label class="checkbox-item"><input type="checkbox" value="Liquidity Sweep"><span class="emoji">🧹</span> 流动性扫荡</label>
+            <label class="checkbox-item"><input type="checkbox" value="Liquidity Zone"><span class="emoji">🎯</span> 流动性区域</label>
+            <label class="checkbox-item"><input type="checkbox" value="Killzone"><span class="emoji">🔪</span> Killzone (杀戮区)</label>
+            <label class="checkbox-item"><input type="checkbox" value="Premium-Discount"><span class="emoji">📉</span> 溢价/折价</label>
+            <label class="checkbox-item"><input type="checkbox" value="Silver Bullet"><span class="emoji">🔫</span> Silver Bullet (银弹)</label>
+            <label class="checkbox-item"><input type="checkbox" value="供需区"><span class="emoji">⚖️</span> 供需区 (Supply & Demand)</label>
+            <label class="checkbox-item"><input type="checkbox" value="Wyckoff"><span class="emoji">📖</span> Wyckoff (威科夫)</label>
+            <label class="checkbox-item"><input type="checkbox" value="POI"><span class="emoji">📍</span> POI (关注点)</label>
+            <label class="checkbox-item"><input type="checkbox" value="OTE"><span class="emoji">✨</span> OTE (最佳入场区)</label>
+            <label class="checkbox-item"><input type="checkbox" value="Turtle Soup"><span class="emoji">🐢</span> Turtle Soup (龟汤)</label>
+            <label class="checkbox-item"><input type="checkbox" value="趋势突破"><span class="emoji">📈</span> 趋势突破</label>
+            <label class="checkbox-item"><input type="checkbox" value="支撑阻力"><span class="emoji">📊</span> 支撑阻力</label>
+            <label class="checkbox-item"><input type="checkbox" value="均线交叉"><span class="emoji">〰️</span> 均线交叉</label>
+            <label class="checkbox-item"><input type="checkbox" value="K线形态"><span class="emoji">🕯️</span> K线形态</label>
+            <label class="checkbox-item"><input type="checkbox" value="斐波那契"><span class="emoji">🎯</span> 斐波那契</label>
+          </div>
+        </div>
+        
+        <!-- Emotions -->
+        <div class="form-group">
+          <label class="form-label">😌 交易情绪</label>
+          <div class="checkbox-grid" id="emotions-grid">
+            <label class="checkbox-item"><input type="checkbox" value="冷静"><span class="emoji">😌</span> 冷静</label>
+            <label class="checkbox-item"><input type="checkbox" value="自信"><span class="emoji">💪</span> 自信</label>
+            <label class="checkbox-item"><input type="checkbox" value="焦虑"><span class="emoji">😰</span> 焦虑</label>
+            <label class="checkbox-item"><input type="checkbox" value="贪婪"><span class="emoji">🤑</span> 贪婪</label>
+            <label class="checkbox-item"><input type="checkbox" value="恐惧"><span class="emoji">😨</span> 恐惧</label>
+            <label class="checkbox-item"><input type="checkbox" value="后悔"><span class="emoji">😞</span> 后悔</label>
+            <label class="checkbox-item"><input type="checkbox" value="急躁"><span class="emoji">😤</span> 急躁</label>
+            <label class="checkbox-item"><input type="checkbox" value="兴奋"><span class="emoji">🤩</span> 兴奋</label>
+            <label class="checkbox-item"><input type="checkbox" value="犹豫"><span class="emoji">🤔</span> 犹豫</label>
+            <label class="checkbox-item"><input type="checkbox" value="满意"><span class="emoji">😊</span> 满意</label>
+          </div>
+        </div>
+        
+        <!-- Errors -->
+        <div class="form-group">
+          <label class="form-label">⚠️ 交易错误</label>
+          <div class="checkbox-grid" id="errors-grid">
+            <label class="checkbox-item"><input type="checkbox" value="过早止损"><span class="emoji">🛑</span> 过早止损</label>
+            <label class="checkbox-item"><input type="checkbox" value="FOMO"><span class="emoji">🔥</span> FOMO</label>
+            <label class="checkbox-item"><input type="checkbox" value="扛单"><span class="emoji">💪</span> 扛单</label>
+            <label class="checkbox-item"><input type="checkbox" value="不止损"><span class="emoji">🚫</span> 不止损</label>
+            <label class="checkbox-item"><input type="checkbox" value="晚止损"><span class="emoji">⏰</span> 晚止损</label>
+            <label class="checkbox-item"><input type="checkbox" value="盲目加仓"><span class="emoji">➕</span> 盲目加仓</label>
+            <label class="checkbox-item"><input type="checkbox" value="逆势加仓"><span class="emoji">🔽</span> 逆势加仓</label>
+            <label class="checkbox-item"><input type="checkbox" value="重仓"><span class="emoji">🐘</span> 重仓</label>
+            <label class="checkbox-item"><input type="checkbox" value="仓位管理不当"><span class="emoji">📐</span> 仓位管理不当</label>
+            <label class="checkbox-item"><input type="checkbox" value="盈亏比不合理"><span class="emoji">⚖️</span> 盈亏比不合理</label>
+            <label class="checkbox-item"><input type="checkbox" value="追涨杀跌"><span class="emoji">🏃</span> 追涨杀跌</label>
+            <label class="checkbox-item"><input type="checkbox" value="逆势"><span class="emoji">🔄</span> 逆势</label>
+            <label class="checkbox-item"><input type="checkbox" value="早止盈"><span class="emoji">🏁</span> 早止盈</label>
+            <label class="checkbox-item"><input type="checkbox" value="过度交易"><span class="emoji">🔄</span> 过度交易</label>
+            <label class="checkbox-item"><input type="checkbox" value="报复交易"><span class="emoji">💢</span> 报复交易</label>
+            <label class="checkbox-item"><input type="checkbox" value="计划外交易"><span class="emoji">📋</span> 计划外交易</label>
+            <label class="checkbox-item"><input type="checkbox" value="缺乏耐心"><span class="emoji">⏳</span> 缺乏耐心</label>
+            <label class="checkbox-item"><input type="checkbox" value="没等确认入场"><span class="emoji">❓</span> 没等确认入场</label>
+            <label class="checkbox-item"><input type="checkbox" value="忽略大趋势"><span class="emoji">📊</span> 忽略大趋势</label>
+            <label class="checkbox-item"><input type="checkbox" value="情绪化交易"><span class="emoji">🌪️</span> 情绪化交易</label>
+            <label class="checkbox-item"><input type="checkbox" value="键盘交易"><span class="emoji">⌨️</span> 键盘交易(随意入场)</label>
+          </div>
+        </div>
+        
+        <!-- Image Upload -->
+        <div class="form-group">
+          <label class="form-label">📷 截图上传</label>
+          <input type="file" id="t-form-image" accept="image/*" style="width:100%;padding:8px;background:var(--input-bg);border-radius:6px;border:1px solid var(--border);color:var(--text);font-size:13px">
+          <div class="image-preview-container" id="image-preview-container"></div>
+        </div>
+        
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button class="btn btn-primary" onclick="saveTrade()" style="flex:1">💾 保存</button>
+          <button class="btn btn-secondary" onclick="closeTradeModal()">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TRADE DETAIL MODAL ===== -->
+  <div class="modal-overlay" id="detail-modal" style="display:none">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="detail-title">交易详情</h3>
+        <button class="modal-close" onclick="closeDetailModal()">✕</button>
+      </div>
+      <div id="detail-content"></div>
+    </div>
+  </div>
+
+  <!-- ===== SETTINGS PAGE ===== -->
+  <div class="page" id="page-settings">
+    <div class="page-header">
+      <div><h1>⚙️ 设置</h1></div>
+      <button class="btn btn-sm btn-secondary" onclick="showPage('dashboard')">← 返回</button>
+    </div>
+
+    <!-- Theme & Currency -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">🎨 外观与货币</span></div>
+      <div class="settings-row">
+        <div><div class="label">🌓 深色模式</div><div class="desc">切换深色/浅色主题</div></div>
+        <div class="toggle" id="theme-toggle" onclick="toggleTheme()"></div>
+      </div>
+      <div class="settings-row">
+        <div><div class="label">💰 货币单位</div><div class="desc">USD / CNY 切换</div></div>
+        <div class="toggle" id="currency-toggle" onclick="toggleCurrency()"></div>
+      </div>
+      <div class="settings-row">
+        <div><div class="label">当前货币</div></div>
+        <span id="currency-label" style="font-weight:600;font-size:16px">USD</span>
+      </div>
+    </div>
+
+    <!-- Data Management -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">💾 数据管理</span></div>
+      <div class="settings-row">
+        <div><div class="label">📥 导出数据 (JSON)</div></div>
+        <button class="btn btn-sm btn-secondary" onclick="exportData()">导出</button>
+      </div>
+      <div class="settings-row">
+        <div><div class="label">📤 导入数据 (JSON)</div></div>
+        <input type="file" id="import-json" accept=".json" style="font-size:12px" onchange="importData(event)">
+      </div>
+      <div class="settings-row">
+        <div><div class="label">🗑️ 清除所有数据</div></div>
+        <button class="btn btn-sm btn-danger" onclick="clearAllData()">清除</button>
+      </div>
+    </div>
+
+    <!-- CSV Import -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">📄 CSV 导入</span></div>
+      <div class="form-group">
+        <label class="form-label">格式选择</label>
+        <select class="form-select" id="csv-format-select">
+          <option value="auto">自动检测 (Auto)</option>
+          <option value="binance">Binance 持仓历史</option>
+          <option value="unified">统一交易明细</option>
+          <option value="generic">通用 (Generic)</option>
+        </select>
+      </div>
+      <div class="upload-zone" id="csv-upload-zone">
+        <span class="upload-icon">📂</span>
+        <div class="upload-text">点击或拖拽 CSV 文件到此处</div>
+        <div class="upload-hint">支持 Binance / 统一交易明细 / 通用格式</div>
+      </div>
+      <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none">
+      <div id="csv-debug" class="debug-section" style="display:none"></div>
+    </div>
+
+    <!-- AI Settings -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">🤖 AI 分析设置</span></div>
+      <div class="form-group">
+        <label class="form-label">API 类型</label>
+        <select class="form-select" id="ai-api-type">
+          <option value="deepseek">DeepSeek</option>
+          <option value="openai">OpenAI</option>
+          <option value="custom">自定义 (Custom)</option>
+        </select>
+      </div>
+      <div class="form-group" id="ai-custom-url-group" style="display:none">
+        <label class="form-label">自定义 API URL</label>
+        <input class="form-input" id="ai-custom-url" placeholder="https://your-api-endpoint.com/v1/chat/completions">
+      </div>
+      <div class="form-group">
+        <label class="form-label">API Key</label>
+        <input class="form-input" id="ai-api-key" type="password" placeholder="sk-..." autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">模型名称</label>
+        <input class="form-input" id="ai-model" placeholder="deepseek-chat / gpt-4o-mini">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="saveAiSettings()">💾 保存</button>
+        <button class="btn btn-secondary btn-sm" onclick="testAiConnection()">🔗 测试连接</button>
+      </div>
+      <div id="ai-test-result" style="margin-top:8px;font-size:13px"></div>
+    </div>
+
+    <!-- ===== Exchange API Config ===== -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">🔌 交易所 API 自动同步</span></div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px">配置交易所 API Key 后，可自动同步历史交易记录。服务器模式下生效（启动 start_server.py 或 start.bat）。</div>
+      <div id="exchange-dns-warning" style="font-size:12px;color:var(--orange-badge);margin-bottom:10px;padding:8px;background:var(--bg2);border-radius:6px;border:1px solid var(--orange-badge);display:none">
+        ⚠️ 检测到网络连接问题，请按以下步骤排查：<br>
+        1️⃣ 确认代理软件（Clash/V2Ray）正在运行<br>
+        2️⃣ 在下方【代理设置】处填写地址如 http://127.0.0.1:7890<br>
+        3️⃣ 点击【💾 保存配置】保存到服务器端<br>
+        4️⃣ 重新点击【📡 测试连接】
+      </div>
+      <div class="form-group">
+        <label class="form-label">交易所</label>
+        <select class="form-select" id="exchange-api-type">
+          <option value="binance">Binance</option>
+          <option value="okx">OKX</option>
+          
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">API Key</label>
+        <input class="form-input" id="exchange-api-key" type="password" placeholder="输入你的 API Key" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Secret Key</label>
+        <input class="form-input" id="exchange-api-secret" type="password" placeholder="输入你的 Secret Key" autocomplete="off">
+      </div>
+      <div class="form-group" id="exchange-passphrase-group" style="display:none">
+        <label class="form-label">Passphrase (OKX 专用)</label>
+        <input class="form-input" id="exchange-api-passphrase" type="password" placeholder="输入你的 OKX Passphrase" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🌐 网络代理（可选，需要翻墙时填写）</label>
+        <input class="form-input" id="exchange-proxy-url" placeholder="例如: http://127.0.0.1:7890" autocomplete="off">
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">留空 = 直连；代理运行在服务器端（电脑），手机访问也能生效。填写电脑代理地址如 http://127.0.0.1:7890</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="saveExchangeSettings()">💾 保存配置</button>
+        <button class="btn btn-secondary btn-sm" onclick="testExchangeConnection()">🔗 测试连接</button>
+        <button class="btn btn-accent btn-sm" onclick="syncExchangeTrades()">📥 同步历史交易</button>
+      </div>
+      <div class="form-row" style="margin-top:8px">
+        <button class="btn btn-secondary btn-sm" onclick="autoDetectProxy()">🔍 自动检测代理</button>
+        <button class="btn btn-secondary btn-sm" onclick="testProxyExit()">🛡️ 代理诊断</button>
+        <button class="btn btn-secondary btn-sm" onclick="checkExchangeDNS()">🌐 网络诊断</button>
+      </div>
+      <div id="exchange-diagnostic" style="margin-top:6px;font-size:12px;color:var(--text2);display:none"></div>
+      <div id="exchange-test-result" style="margin-top:8px;font-size:13px"></div>
+      <div id="exchange-sync-progress" style="margin-top:8px;font-size:13px;display:none"></div>
+    </div>
+
+    <!-- Local Analysis -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">🧠 本地深度分析</span></div>
+      <div class="form-group">
+        <label class="form-label">选择最近交易数量</label>
+        <select class="form-select" id="local-analysis-count">
+          <option value="5">最近 5 笔</option>
+          <option value="10" selected>最近 10 笔</option>
+          <option value="20">最近 20 笔</option>
+          <option value="0">全部交易</option>
+        </select>
+      </div>
+      <button class="btn btn-accent" onclick="runLocalAnalysis()">🔍 运行分析</button>
+      <div id="local-analysis-output" class="ai-output" style="display:none"></div>
+    </div>
+
+    <!-- Sample Data -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">📌 示例数据</span></div>
+      <button class="btn btn-secondary btn-sm" onclick="loadSampleData()">加载示例交易数据</button>
+    </div>
+
+    <!-- About -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">ℹ️ 关于 & 联系开发者</span>
+      <div style='margin-top:12px;padding:10px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border);font-size:13px;line-height:1.8'><div style='font-weight:600;margin-bottom:4px'>📞 联系开发者</div><div>QQ: <strong>3064573067</strong></div><div style='font-size:11px;color:var(--text3);margin-top:4px'>如有问题、建议或需要技术支持，欢迎联系</div></div></div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7">
+        <strong>TradeLens Pro</strong> v3.1 · 专业交易日志系统<br>
+        <span style="font-size:11px;color:var(--text3)">红涨绿跌 · 中文配色惯例 · 数据存储于浏览器本地 (localStorage)</span>
+      </div>
+      <div style="margin-top:12px;padding:12px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px">📱 两种使用方式</div>
+        
+        <div style="font-size:12px;margin-bottom:10px;padding:8px;background:var(--card);border-radius:6px;border-left:3px solid var(--accent)">
+          <strong style="color:var(--accent)">路径一：纯网页版（推荐手机/PWA）</strong><br>
+          <span style="color:var(--text2)">直接双击打开 <code style="background:var(--bg2);padding:1px 4px;border-radius:3px">index.html</code><br>
+          → 手动记账、截图、本地分析、AI 分析（需配置 API Key）<br>
+          → 点击截图可放大查看<br>
+          → 支持复盘记录 · 待复盘标记<br>
+          → 可添加到手机主屏幕作为 PWA 应用离线使用</span>
+        </div>
+        
+        <div style="font-size:12px;padding:8px;background:var(--card);border-radius:6px;border-left:3px solid var(--primary)">
+          <strong style="color:var(--primary)">路径二：服务器模式（推荐电脑全功能）</strong><br>
+          <span style="color:var(--text2)">双击 <code style="background:var(--bg2);padding:1px 4px;border-radius:3px">start.bat</code> 或运行 <code style="background:var(--bg2);padding:1px 4px;border-radius:3px">python start_server.py</code><br>
+          → 通过 <code style="background:var(--bg2);padding:1px 4px;border-radius:3px">http://localhost:5000</code> 访问<br>
+          → 交易所 API 自动同步交易记录（标记待复盘）<br>
+          → 电脑手机数据实时同步（通过服务器）<br>
+          → 手机收到待复盘记录，可随时编辑复盘内容<br>
+          → 同一 WiFi 下手机访问 <code style="background:var(--bg2);padding:1px 4px;border-radius:3px">http://电脑IP:5000</code></span>
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:var(--bg2);border-radius:var(--radius-sm);font-size:12px;color:var(--text2);line-height:1.6">
+        <strong>🆕 v3.1 新功能</strong><br>
+        • 🔌 交易所 API 自动同步（Binance/OKX）<br>
+        • 📋 待复盘系统：自动同步的交易自动标记为待复盘<br>
+        • 🖼️ 截图支持点击放大查看<br>
+        • 🔄 电脑/手机数据跨设备同步<br>
+        • 📊 仪表盘显示待复盘数量
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Bottom Navigation ===== -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="showPage('dashboard')">
+    <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+    <span>仪表盘</span>
+  </button>
+  <button class="nav-item" onclick="showPage('trades')">
+    <svg viewBox="0 0 24 24"><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></svg>
+    <span>交易</span>
+  </button>
+  <button class="nav-item" onclick="showPage('calendar')">
+    <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+    <span>日历</span>
+  </button>
+  <button class="nav-item" onclick="showPage('analysis')">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+    <span>分析</span>
+  </button>
+  <button class="nav-item" onclick="showPage('settings')">
+    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    <span>设置</span>
+  </button>
+</nav>
+
+<!-- ===== Toast Container ===== -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ===== Image Lightbox ===== -->
+<div class="modal-overlay" id="image-lightbox" style="display:none;background:rgba(0,0,0,.9);z-index:5000;cursor:pointer" onclick="closeImageLightbox()">
+  <div style="max-width:95vw;max-height:95vh;display:flex;align-items:center;justify-content:center">
+    <img id="lightbox-image" style="max-width:100%;max-height:95vh;object-fit:contain;border-radius:8px">
+  </div>
+  <button class="modal-close" style="position:fixed;top:20px;right:20px;color:#fff;font-size:32px;z-index:5001;background:rgba(0,0,0,.5);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center" onclick="event.stopPropagation();closeImageLightbox()">✕</button>
+</div>
+
+<script>
+/* =============================================
+   TradeLens Pro - Application JavaScript
+   ============================================= */
+
+// ===== State Management =====
+const STATE_KEY = 'tradelens_data';
+const SETTINGS_KEY = 'tradelens_settings';
+
+let trades = [];
+let settings = {
+  theme: 'dark',
+  currency: 'USD',
+  usdToCny: 7.25,
+  aiApiType: 'deepseek',
+  aiApiKey: '',
+  aiModel: 'deepseek-chat',
+  aiCustomUrl: '',
+  exchangeApiType: 'binance',
+  exchangeApiKey: '',
+  exchangeApiSecret: '',
+  exchangeApiPassphrase: '',
+  httpProxy: '',
+  lastSyncTime: ''
+};
+
+let editingTradeId = null;
+let calendarDate = new Date();
+let selectedCalendarDay = null;
+let uploadedImageData = null;
+
+
+// ===== Init =====
+function init() {
+  loadState();
+  loadState();
+
+
+
+  applyTheme();
+  applyCurrency();
+  renderDashboard();
+  renderTradeList();
+  renderCalendar();
+  setupCSVUpload();
+  setupCheckboxGrids();
+  populateFilterSymbols();
+  updateCounts();
+  
+  // AI settings event
+  document.getElementById('ai-api-type').addEventListener('change', function() {
+    document.getElementById('ai-custom-url-group').style.display = this.value === 'custom' ? 'block' : 'none';
+  });
+  
+  // Exchange API settings event
+  document.getElementById('exchange-api-type').addEventListener('change', function() {
+    document.getElementById('exchange-passphrase-group').style.display = this.value === 'okx' ? 'block' : 'none';
+  });
+  
+  // Load exchange settings into form
+  loadExchangeSettingsForm();
+  
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+  
+  // 检测运行模式
+  checkServerMode();
+  
+  // 通知待复盘
+  setTimeout(() => {
+    const pending = getPendingReviewCount();
+    if (pending > 0) {
+      showToast(`📋 你有 ${pending} 笔交易待复盘`, 'info');
+    }
+  }, 1500);
+}
+
+// ===== 运行模式检测 =====
+function checkServerMode() {
+  const isFileProtocol = window.location.protocol === 'file:';
+  const modeIndicator = document.getElementById('mode-indicator');
+  if (modeIndicator) {
+    modeIndicator.style.display = 'inline-block';
+    if (isFileProtocol) {
+      modeIndicator.innerHTML = '📄 纯网页模式';
+      modeIndicator.style.background = 'var(--accent)';
+    } else {
+      modeIndicator.innerHTML = '🖥️ 服务器模式';
+      modeIndicator.style.background = 'var(--primary)';
+    }
+  }
+  // 如果是服务器模式，测试 API 是否正常
+  if (!isFileProtocol) {
+    fetch('/api/test').then(r => r.json()).then(d => {
+      if (d.status === 'ok') {
+        console.log('TradeLens Pro Server: 在线');
+        // 服务器在线，从服务器加载数据
+        loadFromServer();
+      }
+    }).catch(() => {
+      console.log('TradeLens Pro Server: 离线');
+    });
+  }
+}
+
+// ===== 服务器数据同步 =====
+async function syncToServer() {
+  if (window.location.protocol === 'file:') return; // 纯网页模式不推送
+  
+  try {
+    const data = {
+      trades: trades,
+      settings: settings
+    };
+    const resp = await fetch('/api/data/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (resp.ok) {
+      console.log('数据已同步到服务器');
+    }
+  } catch(e) {
+    // 服务器不在线，忽略
+    console.log('数据同步失败（服务器离线）');
+  }
+}
+
+async function loadFromServer() {
+  try {
+    const resp = await fetch('/api/data/load');
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.status === 'success' && data.data) {
+        if (data.data.trades && data.data.trades.length > 0) {
+          // 合并：服务器数据优先（多设备同步）
+          const serverTrades = data.data.trades;
+          const localIds = new Set(trades.map(t => t.id));
+          let merged = [...trades];
+          let newCount = 0;
+          serverTrades.forEach(st => {
+            if (!localIds.has(st.id)) {
+              merged.push(st);
+              newCount++;
+            }
+          });
+          if (newCount > 0) {
+            trades = merged;
+            saveState();
+            renderDashboard();
+            renderTradeList();
+            renderCalendar();
+            populateFilterSymbols();
+            updateCounts();
+            showToast(`📥 收到 ${newCount} 条来自其他设备的交易记录`, 'info');
+          }
+        }
+        // 合并设置
+        if (data.data.settings && data.data.settings.exchangeApiKey) {
+          // 只同步 exchange API 设置，不覆盖本地 AI 设置
+          if (!settings.exchangeApiKey) {
+            Object.assign(settings, data.data.settings);
+            saveState();
+          }
+        }
+      }
+    }
+  } catch(e) {
+    console.log('从服务器加载数据失败');
+  }
+}
+
+// ===== Data Persistence =====
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STATE_KEY);
+    if (saved) trades = JSON.parse(saved);
+    const savedSettings = localStorage.getItem(SETTINGS_KEY);
+    if (savedSettings) settings = JSON.parse(savedSettings);
+  } catch(e) { trades = []; }
+}
+
+function saveState() {
+  localStorage.setItem(STATE_KEY, JSON.stringify(trades));
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  // 自动同步到服务器（如果服务器模式）
+  syncToServer();
+}
+
+// ===== Toast =====
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = 'all .3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+// ===== Navigation =====
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${pageId}`).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navMap = {dashboard:0,trades:1,calendar:2,analysis:3,settings:4};
+  const navItems = document.querySelectorAll('.nav-item');
+  if (navMap[pageId] !== undefined) navItems[navMap[pageId]].classList.add('active');
+  if (pageId === 'dashboard') renderDashboard();
+  if (pageId === 'trades') renderTradeList();
+  if (pageId === 'calendar') renderCalendar();
+}
+
+// ===== Theme =====
+function applyTheme() {
+  document.body.classList.toggle('light', settings.theme === 'light');
+  document.getElementById('theme-toggle').classList.toggle('active', settings.theme === 'light');
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  metaTheme.content = settings.theme === 'light' ? '#ffffff' : '#1a1a2e';
+}
+
+function toggleTheme() {
+  settings.theme = settings.theme === 'dark' ? 'light' : 'dark';
+  applyTheme();
+  saveState();
+}
+
+function applyCurrency() {
+  document.getElementById('currency-toggle').classList.toggle('active', settings.currency === 'CNY');
+  document.getElementById('currency-label').textContent = settings.currency;
+}
+
+function toggleCurrency() {
+  settings.currency = settings.currency === 'USD' ? 'CNY' : 'USD';
+  applyCurrency();
+  saveState();
+  renderDashboard();
+  renderTradeList();
+  renderCalendar();
+}
+
+function formatPnl(pnl) {
+  if (pnl === undefined || pnl === null) return '-';
+  const isCNY = settings.currency === 'CNY';
+  const val = isCNY ? pnl * settings.usdToCny : pnl;
+  const prefix = val >= 0 ? '+' : '';
+  const symbol = isCNY ? '¥' : '$';
+  return `${prefix}${symbol}${val.toFixed(5)}`;
+}
+
+// ===== Dashboard =====
+function renderDashboard() {
+  const count = trades.length;
+  document.getElementById('dash-trade-count').textContent = count;
+  document.getElementById('dash-pending-count').textContent = getPendingReviewCount();
+  
+  if (count === 0) {
+    document.getElementById('dash-stats').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3)">暂无交易数据<br><button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="loadSampleData()">加载示例数据</button></div>';
+    document.getElementById('dash-chart').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">暂无数据</div>';
+    document.getElementById('dash-recent-trades').innerHTML = '';
+    return;
+  }
+  
+  const wins = trades.filter(t => t.pnl > 0).length;
+  const losses = trades.filter(t => t.pnl < 0).length;
+  const winRate = count > 0 ? (wins / count * 100) : 0;
+  const totalPnl = trades.reduce((s, t) => s + (t.pnl || 0), 0);
+  const biggestWin = trades.length > 0 ? Math.max(...trades.map(t => t.pnl || 0)) : 0;
+  const biggestLoss = trades.length > 0 ? Math.min(...trades.map(t => t.pnl || 0)) : 0;
+  
+  let streak = 0, currentStreak = 0, maxStreak = 0;
+  const sorted = [...trades].sort((a,b) => (b.closeDate||b.openDate||'').localeCompare(a.closeDate||a.openDate||''));
+  let prevType = null;
+  for (const t of sorted) {
+    const type = t.pnl > 0 ? 'win' : t.pnl < 0 ? 'loss' : 'break';
+    if (type === 'break') continue;
+    if (type === prevType || prevType === null) { currentStreak++; } else { currentStreak = 1; }
+    prevType = type;
+    maxStreak = Math.max(maxStreak, currentStreak);
+  }
+  streak = maxStreak;
+  
+  const avgPnl = totalPnl / count;
+  
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-label">总交易</div><div class="stat-value">${count}</div></div>
+    <div class="stat-card"><div class="stat-label">胜率</div><div class="stat-value ${winRate >= 50 ? 'profit' : 'loss'}">${winRate.toFixed(1)}%</div></div>
+    <div class="stat-card"><div class="stat-label">总盈亏</div><div class="stat-value ${totalPnl >= 0 ? 'profit' : 'loss'}">${formatPnl(totalPnl)}</div></div>
+    <div class="stat-card"><div class="stat-label">最大盈利</div><div class="stat-value profit">${formatPnl(biggestWin)}</div></div>
+    <div class="stat-card"><div class="stat-label">最大亏损</div><div class="stat-value loss">${formatPnl(biggestLoss)}</div></div>
+    <div class="stat-card"><div class="stat-label">最长连胜/连败</div><div class="stat-value">${streak}</div></div>
+    <div class="stat-card"><div class="stat-label">平均盈亏</div><div class="stat-value ${avgPnl >= 0 ? 'profit' : 'loss'}">${formatPnl(avgPnl)}</div></div>
+    <div class="stat-card"><div class="stat-label">盈利/亏损</div><div class="stat-value">${wins}/${losses}</div></div>
+    <div class="stat-card"><div class="stat-label">📋 待复盘</div><div class="stat-value" style="color:var(--orange-badge)">${getPendingReviewCount()}</div></div>
+  `;
+  
+  // Monthly chart
+  renderMonthlyChart();
+  
+  // Recent trades
+  const recent = sorted.slice(0, 5);
+  document.getElementById('dash-recent-trades').innerHTML = recent.map(t => {
+    const grade = computeGrade(t);
+    const pendingBadge = t.reviewStatus === 'pending' ? '<span style="font-size:9px;padding:1px 5px;background:var(--orange-badge);color:#fff;border-radius:6px;margin-left:4px">待复盘</span>' : '';
+    return `<div class="trade-item" onclick="showTradeDetail('${t.id}')">
+      <div class="row1">
+        <span class="symbol">${t.symbol || '?'}</span>
+        <span><span class="direction ${t.direction === 'Long' ? 'direction-long' : 'direction-short'}">${t.direction === 'Long' ? '做多' : '做空'}</span>
+        <span class="grade-badge grade-${grade}" style="margin-left:6px">${grade}</span>${pendingBadge}</span>
+      </div>
+      <div class="row2">
+        <span>${t.openDate || ''}</span>
+        <span class="pnl ${t.pnl >= 0 ? 'profit' : 'loss'}">${formatPnl(t.pnl)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMonthlyChart() {
+  const container = document.getElementById('dash-chart');
+  if (trades.length === 0) { container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">暂无数据</div>'; return; }
+  
+  const monthly = {};
+  trades.forEach(t => {
+    if (!t.closeDate && !t.openDate) return;
+    const d = new Date(t.closeDate || t.openDate);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    monthly[key] = (monthly[key] || 0) + (t.pnl || 0);
+  });
+  
+  const keys = Object.keys(monthly).sort();
+  if (keys.length === 0) { container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">暂无数据</div>'; return; }
+  
+  const values = keys.map(k => monthly[k]);
+  const maxVal = Math.max(...values.map(Math.abs), 1);
+  const isCNY = settings.currency === 'CNY';
+  const factor = isCNY ? settings.usdToCny : 1;
+  
+  container.innerHTML = `<div style="display:flex;align-items:flex-end;gap:4px;height:180px;padding:0 4px">${keys.map((k, i) => {
+    const v = values[i];
+    const h = Math.abs(v) / maxVal * 160;
+    const color = v >= 0 ? 'var(--profit)' : 'var(--loss)';
+    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end">
+      <div style="font-size:9px;color:var(--text3);margin-bottom:2px;white-space:nowrap">${(v * factor).toFixed(1)}</div>
+      <div style="width:100%;height:${h}px;background:${color};border-radius:4px 4px 0 0;min-height:2px;opacity:.8"></div>
+      <div style="font-size:9px;color:var(--text3);margin-top:4px;transform:rotate(-45deg);white-space:nowrap">${k.slice(5)}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ===== Trade List =====
+function renderTradeList() {
+  const search = (document.getElementById('filter-search').value || '').toLowerCase();
+  const symbol = document.getElementById('filter-symbol').value;
+  const dir = document.getElementById('filter-direction').value;
+  const result = document.getElementById('filter-result').value;
+  const exchange = document.getElementById('filter-exchange').value;
+  const product = document.getElementById('filter-product').value;
+  const review = document.getElementById('filter-review').value;
+  const dateFrom = document.getElementById('filter-date-from').value;
+  const dateTo = document.getElementById('filter-date-to').value;
+  
+  let filtered = trades.filter(t => {
+    if (search && !(t.symbol||'').toLowerCase().includes(search)) return false;
+    if (symbol && t.symbol !== symbol) return false;
+    if (dir && t.direction !== dir) return false;
+    if (result === 'win' && (t.pnl || 0) <= 0) return false;
+    if (result === 'loss' && (t.pnl || 0) >= 0) return false;
+    if (exchange && t.exchange !== exchange) return false;
+    if (product && t.product !== product) return false;
+    if (review && (t.reviewStatus || '') !== review) return false;
+    const d = t.closeDate || t.openDate || '';
+    if (dateFrom && d < dateFrom) return false;
+    if (dateTo && d > dateTo + 'T23:59:59') return false;
+    return true;
+  });
+  
+  document.getElementById('trade-count').textContent = filtered.length;
+  
+  const container = document.getElementById('trade-list-container');
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="card" style="text-align:center;padding:32px;color:var(--text3)">没有匹配的交易</div>';
+    return;
+  }
+  
+  const sorted = [...filtered].sort((a,b) => (b.closeDate||b.openDate||'').localeCompare(a.closeDate||a.openDate||''));
+  
+  container.innerHTML = sorted.map(t => {
+    const grade = computeGrade(t);
+    const pendingBadge = t.reviewStatus === 'pending' ? '<span style="font-size:9px;padding:1px 5px;background:var(--orange-badge);color:#fff;border-radius:6px;margin-left:4px">待复盘</span>' : '';
+    return `<div class="trade-item" onclick="showTradeDetail('${t.id}')">
+      <div class="row1">
+        <span><span class="symbol">${t.symbol || '?'}</span>
+          <span class="exchange-badge" style="margin-left:4px">${t.exchange || ''}</span>${pendingBadge}
+        </span>
+        <span>
+          <span class="direction ${t.direction === 'Long' ? 'direction-long' : 'direction-short'}">${t.direction === 'Long' ? '做多' : '做空'}</span>
+          <span class="grade-badge grade-${grade}" style="margin-left:6px">${grade}</span>
+        </span>
+      </div>
+      <div class="row2">
+        <span>${t.closeDate || t.openDate || ''} · ${t.product || ''}</span>
+        <span class="pnl ${t.pnl >= 0 ? 'profit' : 'loss'}">${formatPnl(t.pnl)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function populateFilterSymbols() {
+  const select = document.getElementById('filter-symbol');
+  const symbols = [...new Set(trades.map(t => t.symbol).filter(Boolean))].sort();
+  const current = select.value;
+  select.innerHTML = '<option value="">全部品种</option>' + symbols.map(s => `<option value="${s}">${s}</option>`).join('');
+  select.value = current;
+}
+
+function updateCounts() {
+  document.getElementById('dash-trade-count').textContent = trades.length;
+  document.getElementById('trade-count').textContent = trades.length;
+}
+
+// ===== Calendar =====
+function renderCalendar() {
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+  document.getElementById('calendar-title').textContent = `${year}年${month + 1}月`;
+  
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+  
+  // Build daily P&L
+  const dailyPnl = {};
+  trades.forEach(t => {
+    const d = t.closeDate || t.openDate;
+    if (!d) return;
+    const key = d.slice(0, 10);
+    dailyPnl[key] = (dailyPnl[key] || 0) + (t.pnl || 0);
+  });
+  
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  
+  let html = '';
+  const dayNames = ['日','一','二','三','四','五','六'];
+  dayNames.forEach(d => { html += `<div class="calendar-header">${d}</div>`; });
+  
+  let monthPnl = 0;
+  let tradeDays = 0;
+  
+  // Previous month days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const day = daysInPrev - i;
+    const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    html += `<div class="calendar-day other-month"><span class="day-num">${day}</span></div>`;
+  }
+  
+  // Current month days
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const pnl = dailyPnl[dateStr] || 0;
+    const isToday = dateStr === todayStr;
+    const hasTrades = dailyPnl[dateStr] !== undefined;
+    if (hasTrades) { monthPnl += pnl; tradeDays++; }
+    const pnlClass = pnl > 0 ? 'profit' : pnl < 0 ? 'loss' : '';
+    
+    html += `<div class="calendar-day ${isToday ? 'today' : ''} ${hasTrades ? 'has-trades' : ''}" onclick="selectCalendarDay('${dateStr}')">
+      <span class="day-num">${day}</span>
+      ${hasTrades ? `<span class="day-pnl ${pnlClass}">${pnl > 0 ? '+' : ''}${pnl.toFixed(0)}</span>` : ''}
+    </div>`;
+  }
+  
+  // Fill remaining cells
+  const totalCells = firstDay + daysInMonth;
+  const remaining = 7 - (totalCells % 7 || 7);
+  for (let i = 1; i <= remaining; i++) {
+    html += `<div class="calendar-day other-month"><span class="day-num">${i}</span></div>`;
+  }
+  
+  document.getElementById('calendar-grid').innerHTML = html;
+  document.getElementById('calendar-month-pnl').textContent = `${formatPnl(monthPnl)}`;
+  document.getElementById('calendar-month-pnl').className = monthPnl >= 0 ? 'profit' : 'loss';
+  document.getElementById('calendar-trade-days').textContent = tradeDays;
+  
+  // Show selected day detail
+  if (selectedCalendarDay) {
+    selectCalendarDay(selectedCalendarDay);
+  }
+}
+
+function changeMonth(delta) {
+  calendarDate.setMonth(calendarDate.getMonth() + delta);
+  renderCalendar();
+}
+
+function selectCalendarDay(dateStr) {
+  selectedCalendarDay = dateStr;
+  const dayTrades = trades.filter(t => {
+    const d = (t.closeDate || t.openDate || '').slice(0, 10);
+    return d === dateStr;
+  });
+  
+  const container = document.getElementById('calendar-day-detail');
+  if (dayTrades.length === 0) {
+    container.innerHTML = '<div style="color:var(--text3);text-align:center;padding:16px">该日无交易</div>';
+    return;
+  }
+  
+  const dayPnl = dayTrades.reduce((s, t) => s + (t.pnl || 0), 0);
+  container.innerHTML = `<div style="margin-bottom:8px;font-size:14px">📅 ${dateStr} · 共 ${dayTrades.length} 笔 · 盈亏: <strong class="${dayPnl >= 0 ? 'profit' : 'loss'}">${formatPnl(dayPnl)}</strong></div>
+    ${dayTrades.map(t => {
+      const grade = computeGrade(t);
+      return `<div class="trade-item" onclick="showTradeDetail('${t.id}')" style="padding:8px 12px">
+        <div class="row1">
+          <span class="symbol" style="font-size:14px">${t.symbol || '?'}</span>
+          <span><span class="direction ${t.direction === 'Long' ? 'direction-long' : 'direction-short'}" style="font-size:10px">${t.direction === 'Long' ? '做多' : '做空'}</span>
+          <span class="grade-badge grade-${grade}" style="width:22px;height:22px;font-size:10px;margin-left:4px">${grade}</span></span>
+        </div>
+        <div class="row2"><span>${t.product || ''}</span><span class="pnl ${t.pnl >= 0 ? 'profit' : 'loss'}">${formatPnl(t.pnl)}</span></div>
+      </div>`;
+    }).join('')}`;
+}
+
+// ===== Trade Form =====
+function openNewTrade() {
+  editingTradeId = null;
+  document.getElementById('trade-modal-title').textContent = '📝 新建交易';
+  clearTradeForm();
+  document.getElementById('trade-modal').style.display = 'flex';
+}
+
+function openEditTrade(id) {
+  editingTradeId = id;
+  document.getElementById('trade-modal-title').textContent = '✏️ 编辑交易';
+  const t = trades.find(x => x.id === id);
+  if (!t) return;
+  
+  document.getElementById('t-form-symbol').value = t.symbol || '';
+  document.getElementById('t-form-direction').value = t.direction || 'Long';
+  document.getElementById('t-form-entry').value = t.entryPrice || '';
+  document.getElementById('t-form-exit').value = t.exitPrice || '';
+  document.getElementById('t-form-qty').value = t.qty || '';
+  document.getElementById('t-form-pnl').value = t.pnl || '';
+  document.getElementById('t-form-exchange').value = t.exchange || 'Binance';
+  document.getElementById('t-form-product').value = t.product || '永续合约';
+  document.getElementById('t-form-open-date').value = t.openDate ? t.openDate.slice(0, 16) : '';
+  document.getElementById('t-form-close-date').value = t.closeDate ? t.closeDate.slice(0, 16) : '';
+  document.getElementById('t-form-notes').value = t.notes || '';
+  
+  // Set checkboxes
+  setCheckboxGroup('signals-grid', t.signals || []);
+  setCheckboxGroup('emotions-grid', t.emotions || []);
+  setCheckboxGroup('errors-grid', t.errors || []);
+  
+  uploadedImageData = t.imageData || null;
+  renderImagePreview();
+  
+  document.getElementById('trade-modal').style.display = 'flex';
+}
+
+function closeTradeModal() {
+  document.getElementById('trade-modal').style.display = 'none';
+  editingTradeId = null;
+  uploadedImageData = null;
+}
+
+function clearTradeForm() {
+  ['t-form-symbol','t-form-entry','t-form-exit','t-form-qty','t-form-pnl','t-form-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('t-form-direction').value = 'Long';
+  document.getElementById('t-form-exchange').value = 'Binance';
+  document.getElementById('t-form-product').value = '永续合约';
+  const now = new Date();
+  const iso = now.toISOString().slice(0, 16);
+  document.getElementById('t-form-open-date').value = iso;
+  document.getElementById('t-form-close-date').value = iso;
+  
+  document.querySelectorAll('#signals-grid input, #emotions-grid input, #errors-grid input').forEach(cb => cb.checked = false);
+  document.querySelectorAll('.checkbox-item').forEach(item => item.classList.remove('active'));
+  
+  uploadedImageData = null;
+  document.getElementById('image-preview-container').innerHTML = '';
+  document.getElementById('t-form-image').value = '';
+}
+
+function setCheckboxGroup(gridId, values) {
+  document.querySelectorAll(`#${gridId} input`).forEach(cb => {
+    cb.checked = values.includes(cb.value);
+    cb.closest('.checkbox-item').classList.toggle('active', cb.checked);
+  });
+}
+
+function setupCheckboxGrids() {
+  document.querySelectorAll('.checkbox-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      const cb = this.querySelector('input');
+      cb.checked = !cb.checked;
+      this.classList.toggle('active', cb.checked);
+    });
+  });
+  document.querySelectorAll('.checkbox-item input').forEach(cb => {
+    cb.addEventListener('change', function() {
+      this.closest('.checkbox-item').classList.toggle('active', this.checked);
+    });
+  });
+  
+  // Image upload
+  document.getElementById('t-form-image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      uploadedImageData = ev.target.result;
+      renderImagePreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderImagePreview() {
+  const container = document.getElementById('image-preview-container');
+  if (uploadedImageData) {
+    container.innerHTML = `<img src="${uploadedImageData}" class="image-preview" onclick="window.open(this.src)"><div style="font-size:11px;color:var(--text3);cursor:pointer" onclick="uploadedImageData=null;renderImagePreview();document.getElementById('t-form-image').value=''">✕ 移除</div>`;
+  } else {
+    container.innerHTML = '';
+  }
+}
+
+function saveTrade() {
+  const symbol = document.getElementById('t-form-symbol').value.trim().toUpperCase();
+  if (!symbol) { showToast('请输入交易品种', 'error'); return; }
+  
+  const pnl = parseFloat(document.getElementById('t-form-pnl').value) || 0;
+  
+  const signals = [...document.querySelectorAll('#signals-grid input:checked')].map(cb => cb.value);
+  const emotions = [...document.querySelectorAll('#emotions-grid input:checked')].map(cb => cb.value);
+  const errors = [...document.querySelectorAll('#errors-grid input:checked')].map(cb => cb.value);
+  
+  const trade = {
+    id: editingTradeId || generateId(),
+    symbol: symbol,
+    direction: document.getElementById('t-form-direction').value,
+    entryPrice: parseFloat(document.getElementById('t-form-entry').value) || 0,
+    exitPrice: parseFloat(document.getElementById('t-form-exit').value) || 0,
+    qty: parseFloat(document.getElementById('t-form-qty').value) || 0,
+    pnl: pnl,
+    exchange: document.getElementById('t-form-exchange').value,
+    product: document.getElementById('t-form-product').value,
+    openDate: document.getElementById('t-form-open-date').value || '',
+    closeDate: document.getElementById('t-form-close-date').value || '',
+    notes: document.getElementById('t-form-notes').value.trim(),
+    signals: signals,
+    emotions: emotions,
+    errors: errors,
+    imageData: uploadedImageData || null,
+    reviewStatus: editingTradeId ? (trades.find(t => t.id === editingTradeId)?.reviewStatus || '') : '',
+    reviewNotes: editingTradeId ? (trades.find(t => t.id === editingTradeId)?.reviewNotes || '') : '',
+    updatedAt: new Date().toISOString()
+  };
+  
+  if (editingTradeId) {
+    const idx = trades.findIndex(t => t.id === editingTradeId);
+    if (idx !== -1) trades[idx] = trade;
+  } else {
+    trades.push(trade);
+  }
+  
+  saveState();
+  closeTradeModal();
+  renderDashboard();
+  renderTradeList();
+  renderCalendar();
+  populateFilterSymbols();
+  updateCounts();
+  showToast(editingTradeId ? '交易已更新' : '交易已保存', 'success');
+}
+
+function generateId() {
+  return 't_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+}
+
+// ===== Trade Detail =====
+function showTradeDetail(id) {
+  const t = trades.find(x => x.id === id);
+  if (!t) return;
+  
+  const grade = computeGrade(t);
+  document.getElementById('detail-title').textContent = `${t.symbol || '?'} 交易详情`;
+  
+  let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <span class="grade-badge grade-${grade}" style="width:36px;height:36px;font-size:16px">${grade}</span>
+    <span class="direction ${t.direction === 'Long' ? 'direction-long' : 'direction-short'}" style="font-size:14px;padding:4px 12px">${t.direction === 'Long' ? '🟢 做多' : '🔴 做空'}</span>
+  </div>`;
+  
+  html += `<div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+    <div class="stat-card"><div class="stat-label">入场</div><div class="stat-value" style="font-size:16px">${t.entryPrice.toFixed(2)}</div></div>
+    <div class="stat-card"><div class="stat-label">出场</div><div class="stat-value" style="font-size:16px">${t.exitPrice.toFixed(2)}</div></div>
+    <div class="stat-card"><div class="stat-label">盈亏</div><div class="stat-value ${t.pnl >= 0 ? 'profit' : 'loss'}" style="font-size:16px">${formatPnl(t.pnl)}</div></div>
+  </div>`;
+  
+  html += `<table style="width:100%;font-size:13px;line-height:2"><tr><td style="color:var(--text2)">品种</td><td>${t.symbol}</td></tr>
+    <tr><td style="color:var(--text2)">数量</td><td>${t.qty}</td></tr>
+    <tr><td style="color:var(--text2)">交易所</td><td>${t.exchange || '-'}</td></tr>
+    <tr><td style="color:var(--text2)">产品类型</td><td>${t.product || '-'}</td></tr>
+    <tr><td style="color:var(--text2)">开仓时间</td><td>${t.openDate || '-'}</td></tr>
+    <tr><td style="color:var(--text2)">平仓时间</td><td>${t.closeDate || '-'}</td></tr>`;
+  
+  if (t.signals && t.signals.length) html += `<tr><td style="color:var(--text2)">📡 信号</td><td>${t.signals.join(' · ')}</td></tr>`;
+  if (t.emotions && t.emotions.length) html += `<tr><td style="color:var(--text2)">😌 情绪</td><td>${t.emotions.join(' · ')}</td></tr>`;
+  if (t.errors && t.errors.length) html += `<tr><td style="color:var(--text2)">⚠️ 错误</td><td style="color:var(--profit)">${t.errors.join(' · ')}</td></tr>`;
+  if (t.notes) html += `<tr><td style="color:var(--text2)">📝 备注</td><td style="white-space:pre-wrap">${t.notes}</td></tr>`;
+  
+  html += `</table>`;
+  
+  if (t.imageData) {
+    html += `<div style="margin-top:12px"><img src="${t.imageData}" style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;border:1px solid var(--border);cursor:pointer" onclick="viewImage('${t.imageData}')"></div>`;
+  }
+  
+  html += `<div style="display:flex;gap:8px;margin-top:16px">
+    <button class="btn btn-primary btn-sm" onclick="openEditTrade('${t.id}');closeDetailModal();" style="flex:1">✏️ 编辑</button>
+    <button class="btn btn-danger btn-sm" onclick="deleteTrade('${t.id}')">🗑️ 删除</button>
+  </div>`;
+  
+  // AI Analysis section
+  html += `<div style="margin-top:16px">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn btn-sm btn-secondary" onclick="runSingleTradeAnalysis('${t.id}')">🧠 本地分析</button>
+      <button class="btn btn-sm btn-accent" onclick="runAiAnalysis('${t.id}')">🤖 AI 分析</button>
+    </div>
+    <div id="single-analysis-output" style="font-size:13px;line-height:1.7"></div>
+  </div>`;
+
+  // Review section
+  const reviewStatus = t.reviewStatus || '';
+  const reviewNotes = t.reviewNotes || '';
+  html += `<div style="margin-top:16px;padding:12px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:13px;font-weight:600">📋 复盘记录</span>
+      ${reviewStatus === 'pending' ? '<span style="font-size:11px;padding:2px 8px;background:var(--orange-badge);color:#fff;border-radius:8px;font-weight:500">待复盘</span>' : reviewStatus === 'reviewed' ? '<span style="font-size:11px;padding:2px 8px;background:var(--accent);color:#fff;border-radius:8px;font-weight:500">已复盘</span>' : ''}
+    </div>
+    <textarea id="review-notes-input" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--input-bg);color:var(--text);font-size:13px;min-height:80px;font-family:inherit;resize:vertical" placeholder="写下你的复盘思考...">${reviewNotes}</textarea>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-sm btn-accent" onclick="saveReview('${t.id}')">💾 保存复盘</button>
+      ${reviewStatus === 'pending' ? `<button class="btn btn-sm btn-primary" onclick="markReviewed('${t.id}')">✅ 标记已复盘</button>` : ''}
+    </div>
+  </div>`;
+  
+  document.getElementById('detail-content').innerHTML = html;
+  document.getElementById('detail-modal').style.display = 'flex';
+}
+
+function closeDetailModal() {
+  document.getElementById('detail-modal').style.display = 'none';
+}
+
+// ===== Review System =====
+function saveReview(id) {
+  const t = trades.find(x => x.id === id);
+  if (!t) return;
+  t.reviewNotes = document.getElementById('review-notes-input').value.trim();
+  if (!t.reviewStatus) t.reviewStatus = 'reviewed';
+  saveState();
+  syncToServer();
+  showToast('复盘内容已保存', 'success');
+}
+
+function markReviewed(id) {
+  const t = trades.find(x => x.id === id);
+  if (!t) return;
+  t.reviewStatus = 'reviewed';
+  t.reviewNotes = document.getElementById('review-notes-input').value.trim() || t.reviewNotes || '';
+  saveState();
+  syncToServer();
+  showTradeDetail(id);
+  renderDashboard();
+  renderTradeList();
+  showToast('已标记为已复盘 ✅', 'success');
+}
+
+function getPendingReviewCount() {
+  return trades.filter(t => t.reviewStatus === 'pending').length;
+}
+
+// Close modals on overlay click
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.style.display = 'none';
+  }
+});
+
+function deleteTrade(id) {
+  if (!confirm('确定要删除这笔交易吗？')) return;
+  trades = trades.filter(t => t.id !== id);
+  saveState();
+  closeDetailModal();
+  renderDashboard();
+  renderTradeList();
+  renderCalendar();
+  populateFilterSymbols();
+  updateCounts();
+  showToast('交易已删除', 'info');
+}
+
+// ===== Image Lightbox =====
+function viewImage(src) {
+  document.getElementById('lightbox-image').src = src;
+  document.getElementById('image-lightbox').style.display = 'flex';
+}
+function closeImageLightbox() {
+  document.getElementById('image-lightbox').style.display = 'none';
+}
+
+// ===== Grade Computation =====
+function computeGrade(trade) {
+  if (!trade || trade.pnl === undefined || trade.pnl === null) return 'D';
+  const pnl = trade.pnl;
+  const hasErrors = trade.errors && trade.errors.length > 0;
+  const hasSignal = trade.signals && trade.signals.length > 0;
+  
+  let score = 0;
+  if (pnl > 0) score += 40;
+  if (pnl > 50) score += 15;
+  if (pnl > 200) score += 10;
+  if (pnl < 0) score -= 20;
+  if (pnl < -50) score -= 15;
+  if (pnl < -200) score -= 10;
+  if (hasSignal) score += 20;
+  if (hasErrors) score -= 25;
+  if (trade.emotions && trade.emotions.includes('冷静')) score += 10;
+  if (trade.emotions && (trade.emotions.includes('贪婪') || trade.emotions.includes('恐惧') || trade.emotions.includes('FOMO'))) score -= 15;
+  
+  if (score >= 60) return 'A';
+  if (score >= 35) return 'B';
+  if (score >= 10) return 'C';
+  return 'D';
+}
+
+// ===== Local Deep Analysis =====
+function deepAnalyze(tradesToAnalyze) {
+  if (!tradesToAnalyze || tradesToAnalyze.length === 0) {
+    return '⚠️ 没有交易数据可供分析。请先添加交易记录。\n\n总体评级: 无数据';
+  }
+  
+  const count = tradesToAnalyze.length;
+  const wins = tradesToAnalyze.filter(t => t.pnl > 0).length;
+  const losses = tradesToAnalyze.filter(t => t.pnl < 0).length;
+  const winRate = count > 0 ? (wins / count * 100) : 0;
+  const totalPnl = tradesToAnalyze.reduce((s, t) => s + (t.pnl || 0), 0);
+  const avgPnl = totalPnl / count;
+  const avgWin = wins > 0 ? tradesToAnalyze.filter(t => t.pnl > 0).reduce((s, t) => s + (t.pnl || 0), 0) / wins : 0;
+  const avgLoss = losses > 0 ? tradesToAnalyze.filter(t => t.pnl < 0).reduce((s, t) => s + (t.pnl || 0), 0) / losses : 0;
+  const profitFactor = avgLoss !== 0 ? Math.abs(avgWin / avgLoss) : wins > 0 ? Infinity : 0;
+  
+  // Signal analysis
+  const withSignals = tradesToAnalyze.filter(t => t.signals && t.signals.length > 0);
+  const signalWinRate = withSignals.length > 0 ? (withSignals.filter(t => t.pnl > 0).length / withSignals.length * 100) : 0;
+  
+  // Error analysis
+  const withErrors = tradesToAnalyze.filter(t => t.errors && t.errors.length > 0);
+  const errorRate = count > 0 ? (withErrors.length / count * 100) : 0;
+  
+  // Error types
+  const errorTypes = {};
+  tradesToAnalyze.filter(t => t.errors).forEach(t => t.errors.forEach(e => { errorTypes[e] = (errorTypes[e] || 0) + 1; }));
+  const topErrors = Object.entries(errorTypes).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  
+  // Emotion analysis
+  const calmTrades = tradesToAnalyze.filter(t => t.emotions && t.emotions.includes('冷静'));
+  const calmPnl = calmTrades.reduce((s, t) => s + (t.pnl || 0), 0);
+  const emotionIssues = tradesToAnalyze.filter(t => t.emotions && (t.emotions.includes('贪婪') || t.emotions.includes('恐惧') || t.emotions.includes('FOMO') || t.emotions.includes('急躁')));
+  const issuePnl = emotionIssues.reduce((s, t) => s + (t.pnl || 0), 0);
+  
+  // Instrument analysis
+  const symbols = [...new Set(tradesToAnalyze.map(t => t.symbol).filter(Boolean))];
+  const symbolPerformance = symbols.map(sym => {
+    const st = tradesToAnalyze.filter(t => t.symbol === sym);
+    const spnl = st.reduce((s, t) => s + (t.pnl || 0), 0);
+    return { symbol: sym, pnl: spnl, count: st.length, winRate: st.filter(t => t.pnl > 0).length / st.length * 100 };
+  }).sort((a, b) => b.pnl - a.pnl);
+  
+  // Direction analysis
+  const longTrades = tradesToAnalyze.filter(t => t.direction === 'Long');
+  const shortTrades = tradesToAnalyze.filter(t => t.direction === 'Short');
+  const longPnl = longTrades.reduce((s, t) => s + (t.pnl || 0), 0);
+  const shortPnl = shortTrades.reduce((s, t) => s + (t.pnl || 0), 0);
+  
+  // Streak analysis
+  const sorted = [...tradesToAnalyze].sort((a,b) => (b.closeDate||b.openDate||'').localeCompare(a.closeDate||a.openDate||''));
+  let currentStreak = 0, streakType = null;
+  for (const t of sorted) {
+    if (t.pnl > 0) {
+      if (streakType === 'win') currentStreak++;
+      else { streakType = 'win'; currentStreak = 1; }
+    } else if (t.pnl < 0) {
+      if (streakType === 'loss') currentStreak++;
+      else { streakType = 'loss'; currentStreak = 1; }
+    }
+  }
+  
+  // Build analysis text
+  let analysis = '';
+  
+  // 1. Signal Quality
+  analysis += `【信号质量分析】\n`;
+  analysis += `交易的信号使用率为 ${(withSignals.length/count*100).toFixed(0)}%`;
+  if (withSignals.length > 0) {
+    analysis += `，有信号交易的胜率为 ${signalWinRate.toFixed(1)}%`;
+    if (signalWinRate > 60) analysis += '，信号质量较好，建议坚持信号交易体系。';
+    else if (signalWinRate > 40) analysis += '，信号质量中等，需进一步优化信号筛选标准。';
+    else analysis += '，信号质量偏低，建议重新评估信号策略。';
+  } else {
+    analysis += '，建议逐步建立基于信号的交易体系。';
+  }
+  analysis += '\n\n';
+  
+  // 2. Risk Management
+  analysis += `【风险管理评估】\n`;
+  analysis += `平均盈利 $${avgWin.toFixed(2)} vs 平均亏损 $${Math.abs(avgLoss).toFixed(2)}，盈亏比 ${profitFactor === Infinity ? '∞' : profitFactor.toFixed(2)}`;
+  if (profitFactor >= 2) analysis += '，风控表现优秀。';
+  else if (profitFactor >= 1) analysis += '，风控表现一般，建议提高止盈或收窄止损。';
+  else analysis += '，风控需加强，建议严格执行止损纪律。';
+  analysis += `\n胜率 ${winRate.toFixed(1)}%`;
+  if (winRate >= 60) analysis += '，处于较高水平。';
+  else if (winRate >= 40) analysis += '，处于中等水平。';
+  else analysis += '，偏低，需关注交易策略有效性。';
+  if (errorRate > 30) analysis += `\n⚠️ 错误交易占比 ${errorRate.toFixed(0)}%，需重点关注。`;
+  analysis += '\n\n';
+  
+  // 3. Emotional Discipline
+  analysis += `【情绪纪律分析】\n`;
+  analysis += `冷静状态交易 ${calmTrades.length} 笔，总盈亏 ${calmPnl >= 0 ? '+' : ''}$${calmPnl.toFixed(2)}`;
+  if (calmTrades.length > 0 && calmPnl / Math.max(calmTrades.length, 1) > 0) analysis += '，冷静时表现良好。';
+  if (emotionIssues.length > 0) {
+    analysis += `\n情绪化交易 ${emotionIssues.length} 笔，总盈亏 ${issuePnl >= 0 ? '+' : ''}$${issuePnl.toFixed(2)}`;
+    if (issuePnl < 0) analysis += '，情绪影响明显，建议交易前进行情绪检查。';
+  }
+  const topEmotions = tradesToAnalyze.filter(t => t.emotions).flatMap(t => t.emotions);
+  const emotionCounts = {};
+  topEmotions.forEach(e => { emotionCounts[e] = (emotionCounts[e] || 0) + 1; });
+  const dominantEmotion = Object.entries(emotionCounts).sort((a, b) => b[1] - a[1])[0];
+  if (dominantEmotion) analysis += `\n主导情绪: ${dominantEmotion[0]} (${dominantEmotion[1]}次)`;
+  analysis += '\n\n';
+  
+  // 4. Execution Quality
+  analysis += `【执行质量分析】\n`;
+  const hasPlanErrors = tradesToAnalyze.filter(t => t.errors && t.errors.includes('计划外交易')).length;
+  if (hasPlanErrors > 0) analysis += `计划外交易 ${hasPlanErrors} 次，建议坚持交易计划。\n`;
+  if (currentStreak > 1) {
+    analysis += `当前${streakType === 'win' ? '连胜' : '连败'} ${currentStreak} 笔。`;
+    if (streakType === 'win') analysis += ' 注意避免过度自信。';
+    else analysis += ' 建议暂停交易，复盘反思。';
+    analysis += '\n';
+  }
+  if (topErrors.length > 0) {
+    analysis += `主要错误: ${topErrors.map(([e, c]) => `${e}(${c}次)`).join('、')}\n`;
+  }
+  analysis += '\n';
+  
+  // 5. Instrument-specific Analysis
+  analysis += `【品种分析】\n`;
+  if (symbolPerformance.length > 0) {
+    symbolPerformance.slice(0, 5).forEach(sp => {
+      analysis += `${sp.symbol}: ${sp.count}笔, 胜率${sp.winRate.toFixed(0)}%, 盈亏${sp.pnl >= 0 ? '+' : ''}$${sp.pnl.toFixed(2)}\n`;
+    });
+  }
+  analysis += `\n做多: ${longTrades.length}笔 ${longPnl >= 0 ? '+' : ''}$${longPnl.toFixed(2)} | 做空: ${shortTrades.length}笔 ${shortPnl >= 0 ? '+' : ''}$${shortPnl.toFixed(2)}\n\n`;
+  
+  // 6. Overall Grade
+  let grade = 'D';
+  let score = 0;
+  if (winRate >= 60) score += 25;
+  else if (winRate >= 40) score += 15;
+  else score += 5;
+  if (profitFactor >= 2) score += 25;
+  else if (profitFactor >= 1) score += 15;
+  else score += 5;
+  if (errorRate < 20) score += 20;
+  else if (errorRate < 40) score += 10;
+  else score -= 10;
+  if (totalPnl > 0) score += 20;
+  if (withSignals.length / count > 0.5) score += 10;
+  if (calmTrades.length / count > 0.3) score += 10;
+  if (totalPnl > 500) score += 10;
+  if (totalPnl < -500) score -= 10;
+  
+  if (score >= 80) grade = 'A';
+  else if (score >= 60) grade = 'B';
+  else if (score >= 35) grade = 'C';
+  else grade = 'D';
+  
+  analysis += `【总体评级】\n`;
+  analysis += `总评分: ${score}/100\n`;
+  analysis += `综合评级: ${grade}\n`;
+  analysis += `分析交易数: ${count}笔 | 总盈亏: ${totalPnl >= 0 ? '+' : ''}$${totalPnl.toFixed(2)} | 胜率: ${winRate.toFixed(1)}%`;
+  
+  return analysis;
+}
+
+function runSingleTradeAnalysis(id) {
+  const t = trades.find(x => x.id === id);
+  if (!t) return;
+  const output = document.getElementById('single-analysis-output');
+  output.textContent = '⏳ 分析中...';
+  setTimeout(() => {
+    output.textContent = deepAnalyze([t]);
+  }, 100);
+}
+
+function runLocalAnalysis() {
+  const count = parseInt(document.getElementById('local-analysis-count').value) || 0;
+  const toAnalyze = count > 0 ? trades.slice(-count) : trades;
+  const output = document.getElementById('local-analysis-output');
+  output.style.display = 'block';
+  output.textContent = '⏳ 正在运行深度分析...';
+  
+  setTimeout(() => {
+    output.textContent = deepAnalyze(toAnalyze);
+  }, 200);
+}
+
+// ===== AI API Call =====
+async function callAiApi(messages) {
+  const apiType = settings.aiApiType || 'deepseek';
+  const apiKey = settings.aiApiKey;
+  const model = settings.aiModel || (apiType === 'deepseek' ? 'deepseek-chat' : 'gpt-4o-mini');
+  const customUrl = settings.aiCustomUrl || '';
+  
+  if (!apiKey) {
+    throw new Error('请先在设置中配置 API Key');
+  }
+  
+  let url, headers, body;
+  
+  if (apiType === 'deepseek') {
+    url = 'https://api.deepseek.com/chat/completions';
+  } else if (apiType === 'openai') {
+    url = 'https://api.openai.com/v1/chat/completions';
+  } else if (apiType === 'custom') {
+    url = customUrl;
+    if (!url) throw new Error('请配置自定义 API URL');
+  } else {
+    throw new Error('不支持的 API 类型');
+  }
+  
+  // Try local server proxy first
+  try {
+    const resp = await fetch('/api/ai/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_type: apiType,
+        api_key: apiKey,
+        model: model,
+        custom_url: customUrl,
+        messages: messages
+      })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.status === 'success' && data.data.choices && data.data.choices[0]) {
+        return data.data.choices[0].message.content;
+      }
+    }
+  } catch(e) {
+    // Fall through to direct call
+  }
+  
+  // Direct API call
+  headers = {
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json'
+  };
+  
+  body = JSON.stringify({
+    model: model,
+    messages: messages,
+    temperature: 0.7,
+    max_tokens: 2000
+  });
+  
+  const resp = await fetch(url, { method: 'POST', headers, body });
+  const data = await resp.json();
+  
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  if (data.choices && data.choices[0]) {
+    return data.choices[0].message.content;
+  }
+  throw new Error('API 返回格式异常');
+}
+
+async function runAiAnalysis(id) {
+  const t = trades.find(x => x.id === id);
+  if (!t) return;
+  
+  const output = document.getElementById('single-analysis-output');
+  output.textContent = '🤖 正在请求 AI 分析...';
+  
+  const systemPrompt = '你是一个专业的交易分析师。请对以下交易进行深入分析，涵盖信号质量、风险管理、情绪纪律、执行质量等方面，并给出改进建议。输出格式应包含明确的要点分析和总体评级(A-D)。使用中文回复。';
+  
+  const tradeInfo = `品种: ${t.symbol}, 方向: ${t.direction}, 入场: ${t.entryPrice}, 出场: ${t.exitPrice}, 数量: ${t.qty}, 盈亏: $${t.pnl}, 交易所: ${t.exchange}, 时间: ${t.openDate}~${t.closeDate}, 信号: ${(t.signals||[]).join(',')}, 情绪: ${(t.emotions||[]).join(',')}, 错误: ${(t.errors||[]).join(',')}, 备注: ${t.notes||'无'}`;
+  
+  try {
+    const result = await callAiApi([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: tradeInfo }
+    ]);
+    output.textContent = result;
+  } catch(e) {
+    output.textContent = `⚠️ AI 分析失败: ${e.message}`;
+    showToast(`AI 分析失败: ${e.message}`, 'error');
+  }
+}
+
+// ===== AI Settings =====
+function saveAiSettings() {
+  settings.aiApiType = document.getElementById('ai-api-type').value;
+  settings.aiApiKey = document.getElementById('ai-api-key').value;
+  settings.aiModel = document.getElementById('ai-model').value;
+  settings.aiCustomUrl = document.getElementById('ai-custom-url').value;
+  saveState();
+  showToast('AI 设置已保存', 'success');
+}
+
+async function testAiConnection() {
+  const apiType = document.getElementById('ai-api-type').value;
+  const apiKey = document.getElementById('ai-api-key').value;
+  const model = document.getElementById('ai-model').value;
+  const customUrl = document.getElementById('ai-custom-url').value;
+  
+  if (!apiKey) { showToast('请先输入 API Key', 'error'); return; }
+  
+  const resultDiv = document.getElementById('ai-test-result');
+  resultDiv.textContent = '⏳ 测试连接中...';
+  resultDiv.style.color = 'var(--text2)';
+  
+  try {
+    const resp = await callAiApi([
+      { role: 'user', content: '回复"连接成功"四个字即可' }
+    ]);
+    resultDiv.textContent = `✅ 连接成功! 响应: ${resp.slice(0, 100)}`;
+    resultDiv.style.color = 'var(--accent)';
+    showToast('API 连接成功', 'success');
+  } catch(e) {
+    resultDiv.textContent = `❌ 连接失败: ${e.message}`;
+    resultDiv.style.color = 'var(--profit)';
+    showToast('连接失败', 'error');
+  }
+}
+
+// ===== Exchange API =====
+function loadExchangeSettingsForm() {
+  document.getElementById('exchange-api-type').value = settings.exchangeApiType || 'binance';
+  document.getElementById('exchange-api-key').value = settings.exchangeApiKey || '';
+  document.getElementById('exchange-api-secret').value = settings.exchangeApiSecret || '';
+  document.getElementById('exchange-api-passphrase').value = settings.exchangeApiPassphrase || '';
+  document.getElementById('exchange-proxy-url').value = settings.httpProxy || '';
+  document.getElementById('exchange-passphrase-group').style.display = (settings.exchangeApiType === 'okx') ? 'block' : 'none';
+  if (settings.lastSyncTime) {
+    document.getElementById('exchange-sync-progress').style.display = 'block';
+    document.getElementById('exchange-sync-progress').innerHTML = `🕐 上次同步: ${settings.lastSyncTime}`;
+    document.getElementById('exchange-sync-progress').style.color = 'var(--text2)';
+  }
+}
+
+function saveExchangeSettings() {
+  settings.exchangeApiType = document.getElementById('exchange-api-type').value;
+  settings.exchangeApiKey = document.getElementById('exchange-api-key').value;
+  settings.exchangeApiSecret = document.getElementById('exchange-api-secret').value;
+  settings.exchangeApiPassphrase = document.getElementById('exchange-api-passphrase').value;
+  settings.httpProxy = document.getElementById('exchange-proxy-url').value.trim();
+  saveState();
+  
+  // 同步代理设置到服务器（关键：代理运行在服务器端，不在浏览器端）
+  if (window.location.protocol !== 'file:') {
+    fetch('/api/settings/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ proxy: settings.httpProxy })
+    }).then(r => r.json()).then(data => {
+      if (data.status === 'success') {
+        showToast('配置已保存（代理已同步到服务器）', 'success');
+        // 自动显示诊断结果
+        setTimeout(checkProxyStatus, 500);
+      } else {
+        showToast('交易所 API 配置已保存（代理同步失败）', 'success');
+      }
+    }).catch(() => {
+      showToast('交易所 API 配置已保存', 'success');
+    });
+  } else {
+    showToast('交易所 API 配置已保存', 'success');
+  }
+}
+
+async function testExchangeConnection() {
+  const resultDiv = document.getElementById('exchange-test-result');
+  const apiType = document.getElementById('exchange-api-type').value;
+  const apiKey = document.getElementById('exchange-api-key').value;
+  const apiSecret = document.getElementById('exchange-api-secret').value;
+  const passphrase = document.getElementById('exchange-api-passphrase').value;
+  // 代理由服务器端处理，前端不再传递 proxyUrl
+  // 这样手机浏览器也能正常使用代理（代理在电脑的 Python 端运行）
+
+  if (!apiKey || !apiSecret) {
+    resultDiv.textContent = '❌ 请先填写 API Key 和 Secret Key';
+    resultDiv.style.color = 'var(--profit)';
+    return;
+  }
+
+  // 检查是否在服务器模式下运行
+  if (window.location.protocol === 'file:') {
+    resultDiv.innerHTML = '❌ 当前以文件方式打开(index.html)，无法连接服务器。<br>请 <strong>先启动 start_server.py</strong>，然后通过 <strong>http://localhost:5000</strong> 访问';
+    resultDiv.style.color = 'var(--profit)';
+    showToast('请通过服务器模式访问', 'error');
+    return;
+  }
+
+  resultDiv.textContent = '⏳ 测试连接中...';
+  resultDiv.style.color = 'var(--text2)';
+
+  try {
+    const resp = await fetch('/api/exchange/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: apiType,
+        apiKey: apiKey,
+        apiSecret: apiSecret,
+        passphrase: passphrase
+      })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.status === 'success') {
+        resultDiv.textContent = `✅ 连接成功! 账户: ${data.accountName || '已认证'}`;
+        resultDiv.style.color = 'var(--accent)';
+        showToast('交易所连接成功', 'success');
+        return;
+      }
+      resultDiv.textContent = `❌ 连接失败: ${data.error || '未知错误'}`;
+      resultDiv.style.color = 'var(--profit)';
+      return;
+    }
+    // 服务器返回了错误
+    const errData = await resp.json().catch(() => ({}));
+    const errMsg = errData.error || `HTTP ${resp.status}`;
+    resultDiv.textContent = `❌ ${errMsg}`;
+    resultDiv.style.color = 'var(--profit)';
+    // 检测 DNS 错误，显示代理提示
+    if (errMsg.includes('DNS') || errMsg.includes('getaddrinfo') || errMsg.includes('解析')) {
+      document.getElementById('exchange-dns-warning').style.display = 'block';
+    }
+    showToast('连接失败', 'error');
+  } catch(e) {
+    resultDiv.innerHTML = `❌ 无法连接服务器 (${e.message})<br>请确认：<br>1. 已启动 <strong>start_server.py</strong><br>2. 通过 <strong>http://localhost:5000</strong> 访问（不是双击 index.html）<br>3. 防火墙未阻止 5000 端口`;
+    resultDiv.style.color = 'var(--profit)';
+    showToast('服务器未运行', 'error');
+  }
+}
+
+async function syncExchangeTrades() {
+  const resultDiv = document.getElementById('exchange-test-result');
+  const progressDiv = document.getElementById('exchange-sync-progress');
+  const apiType = document.getElementById('exchange-api-type').value;
+  const apiKey = document.getElementById('exchange-api-key').value;
+  const apiSecret = document.getElementById('exchange-api-secret').value;
+  const passphrase = document.getElementById('exchange-api-passphrase').value;
+  // 代理由服务器端处理，前端不再传递 proxyUrl
+
+  if (!apiKey || !apiSecret) {
+    resultDiv.textContent = '❌ 请先填写 API Key 和 Secret Key';
+    resultDiv.style.color = 'var(--profit)';
+    return;
+  }
+
+  // 检查是否在服务器模式下运行
+  if (window.location.protocol === 'file:') {
+    progressDiv.style.display = 'block';
+    progressDiv.innerHTML = '❌ 当前以文件方式打开，无法同步。<br>请 <strong>先启动 start_server.py</strong>，然后通过 <strong>http://localhost:5000</strong> 访问';
+    progressDiv.style.color = 'var(--profit)';
+    showToast('请通过服务器模式访问', 'error');
+    return;
+  }
+
+  progressDiv.style.display = 'block';
+  progressDiv.textContent = '⏳ 正在同步交易记录...';
+  progressDiv.style.color = 'var(--text2)';
+  resultDiv.textContent = '';
+
+  try {
+    const resp = await fetch('/api/exchange/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: apiType,
+        apiKey: apiKey,
+        apiSecret: apiSecret,
+        passphrase: passphrase,
+        lastSyncTime: settings.lastSyncTime || ''
+      })
+    });
+
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.status === 'success' && data.trades && data.trades.length > 0) {
+        let imported = 0;
+        data.trades.forEach(t => {
+          // Check for duplicates (use closeDate + symbol + pnl)
+          const exists = trades.some(ex => 
+            ex.symbol === t.symbol && 
+            ex.closeDate === t.closeDate && 
+            Math.abs(ex.pnl - t.pnl) < 0.01
+          );
+          if (!exists) {
+            trades.push({
+              id: generateId(),
+              symbol: t.symbol,
+              direction: t.direction,
+              entryPrice: t.entryPrice,
+              exitPrice: t.exitPrice,
+              qty: t.qty,
+              pnl: t.pnl,
+              exchange: t.exchange || apiType.toUpperCase(),
+              product: t.product || '永续合约',
+              openDate: t.openDate,
+              closeDate: t.closeDate,
+              notes: `📥 自动同步 - ${apiType.toUpperCase()} | ${t.notes || ''}`,
+              signals: t.signals || [],
+              emotions: [],
+              errors: [],
+              imageData: null,
+              reviewStatus: 'pending',
+              reviewNotes: '',
+              updatedAt: new Date().toISOString()
+            });
+            imported++;
+          }
+        });
+        
+        if (imported > 0) {
+          settings.lastSyncTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+          saveState();
+          renderDashboard();
+          renderTradeList();
+          renderCalendar();
+          populateFilterSymbols();
+          updateCounts();
+          progressDiv.textContent = `✅ 成功同步 ${imported} 笔新交易! (上次同步: ${settings.lastSyncTime})`;
+          progressDiv.style.color = 'var(--accent)';
+          showToast(`成功同步 ${imported} 笔交易`, 'success');
+        } else {
+          progressDiv.textContent = '✅ 没有新的交易记录需要同步';
+          progressDiv.style.color = 'var(--text2)';
+          showToast('无新交易', 'info');
+        }
+      } else if (data.status === 'success' && (!data.trades || data.trades.length === 0)) {
+        progressDiv.textContent = '✅ 没有新的交易记录';
+        progressDiv.style.color = 'var(--text2)';
+        showToast('无新交易', 'info');
+      } else {
+        progressDiv.textContent = `❌ 同步失败: ${data.error || '未知错误'}`;
+        progressDiv.style.color = 'var(--profit)';
+        showToast('同步失败', 'error');
+      }
+    } else {
+      const err = await resp.json().catch(() => ({}));
+      progressDiv.textContent = `❌ 同步失败: ${err.error || `HTTP ${resp.status}`}`;
+      progressDiv.style.color = 'var(--profit)';
+      showToast('同步失败', 'error');
+    }
+  } catch(e) {
+    progressDiv.textContent = `❌ 无法连接服务器 (${e.message})。请确认：1)已启动 start_server.py 2)通过 http://localhost:5000 访问`;
+    progressDiv.style.color = 'var(--profit)';
+    showToast('服务器未运行', 'error');
+  }
+}
+
+// ===== Proxy Diagnostics =====
+async function checkProxyStatus() {
+  const diagDiv = document.getElementById('exchange-diagnostic');
+  diagDiv.style.display = 'block';
+  diagDiv.innerHTML = '⏳ 检查服务器代理配置...';
+  
+  // 先检查本地存储的代理
+  const localProxy = document.getElementById('exchange-proxy-url').value.trim();
+  let html = `📋 本地输入框: ${localProxy || '(空)'}<br>`;
+  
+  // 检查服务器配置
+  try {
+    const resp = await fetch('/api/settings/proxy');
+    if (resp.ok) {
+      const data = await resp.json();
+      html += `🖥️ 服务器配置: ${data.proxy || '(直连)'}<br>`;
+      
+      if (data.proxy && localProxy !== data.proxy) {
+        html += `⚠️ 不匹配！请点击【💾 保存配置】同步到服务器<br>`;
+      } else if (localProxy && !data.proxy) {
+        html += `⚠️ 代理未保存到服务器！请点击【💾 保存配置】<br>`;
+      } else if (data.proxy) {
+        html += `✅ 代理已配置到服务器端，测试连接时将自动使用<br>`;
+      } else {
+        html += `ℹ️ 当前未配置代理（直连模式）<br>`;
+      }
+      
+      // 额外提示
+      if (localProxy && data.proxy) {
+        html += `<br>💡 代理运行在<strong>电脑</strong>上的软件(Clash/V2Ray)<br>`;
+        html += `   `;
+        html += `127.0.0.1:7890 指向<strong>电脑本机</strong>，手机访问时由<strong>电脑</strong>走代理<br>`;
+        html += `   ✅ 请确保电脑上的代理软件正在运行`;
+      }
+    } else {
+      html += `❌ 无法读取服务器配置<br>`;
+    }
+  } catch(e) {
+    html += `❌ 无法连接服务器: ${e.message}<br>`;
+    html += `请确认已启动 start_server.py 并通过 http://localhost:5000 访问`;
+  }
+  
+  diagDiv.innerHTML = html;
+}
+
+// ===== CSV Import =====
+function setupCSVUpload() {
+  const zone = document.getElementById('csv-upload-zone');
+  const fileInput = document.getElementById('csv-file-input');
+  
+  // Click to upload
+  zone.addEventListener('click', () => fileInput.click());
+  
+  // Drag events
+  zone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('dragover');
+  });
+  
+  zone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+  });
+  
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+      handleCSVFile(e.dataTransfer.files[0]);
+    }
+  });
+  
+  fileInput.addEventListener('change', function(e) {
+    if (this.files.length > 0) handleCSVFile(this.files[0]);
+  });
+}
+
+function handleCSVFile(file) {
+  const format = document.getElementById('csv-format-select').value;
+  const debugDiv = document.getElementById('csv-debug');
+  debugDiv.style.display = 'block';
+  debugDiv.className = 'debug-section';
+  debugDiv.textContent = '⏳ 正在读取文件...';
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const content = e.target.result;
+    parseCSVContent(content, format, debugDiv);
+  };
+  reader.onerror = function() {
+    showDebug(debugDiv, `❌ 文件读取失败: ${reader.error}`, 'error');
+  };
+  reader.readAsText(file);
+}
+
+function parseCSVContent(content, format, debugDiv) {
+  try {
+    // Auto-detect delimiter
+    const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
+    
+    // Count commas vs pipes in first few lines
+    let commaCount = 0, pipeCount = 0;
+    for (let i = 0; i < Math.min(10, lines.length); i++) {
+      commaCount += (lines[i].match(/,/g) || []).length;
+      pipeCount += (lines[i].match(/\|/g) || []).length;
+    }
+    
+    const delimiter = pipeCount > commaCount ? '|' : ',';
+    
+    let parsedTrades = [];
+    let warnings = [];
+    let skippedRows = 0;
+    let detectedFormat = format === 'auto' ? 'generic' : format;
+    
+    if (format === 'auto') {
+      // Auto-detect format
+      if (detectBinance(lines, delimiter)) detectedFormat = 'binance';
+      else if (detectUnified(lines, delimiter)) detectedFormat = 'unified';
+    }
+    
+    if (detectedFormat === 'binance') {
+      parsedTrades = parseBinanceCSV(lines, delimiter, warnings, () => skippedRows++);
+    } else if (detectedFormat === 'unified') {
+      parsedTrades = parseUnifiedCSV(lines, delimiter, warnings, () => skippedRows++);
+    } else {
+      parsedTrades = parseGenericCSV(lines, delimiter, warnings, () => skippedRows++);
+    }
+    
+    if (parsedTrades.length > 0) {
+      trades.push(...parsedTrades);
+      saveState();
+      renderDashboard();
+      renderTradeList();
+      renderCalendar();
+      populateFilterSymbols();
+      updateCounts();
+      
+      let msg = `✅ 成功导入 ${parsedTrades.length} 笔交易\n`;
+      msg += `格式: ${detectedFormat === 'binance' ? 'Binance 持仓历史' : detectedFormat === 'unified' ? '统一交易明细' : '通用格式'}\n`;
+      msg += `分隔符: ${delimiter === '|' ? '竖线(|)' : '逗号(,)'}\n`;
+      msg += `跳过行: ${skippedRows} 行\n`;
+      if (warnings.length > 0) msg += `\n⚠️ 警告:\n${warnings.join('\n')}`;
+      
+      showDebug(debugDiv, msg, 'success');
+      showToast(`成功导入 ${parsedTrades.length} 笔交易`, 'success');
+    } else {
+      let msg = `❌ 未能解析出有效交易数据\n`;
+      msg += `格式: ${detectedFormat}\n`;
+      msg += `分隔符: ${delimiter === '|' ? '竖线(|)' : '逗号(,)'}\n`;
+      msg += `总行数: ${lines.length}\n`;
+      msg += `跳过行: ${skippedRows} 行\n`;
+      msg += `\n📋 前5行内容:\n${lines.slice(0, 5).join('\n')}`;
+      if (warnings.length > 0) msg += `\n\n⚠️ 警告:\n${warnings.join('\n')}`;
+      
+      showDebug(debugDiv, msg, 'error');
+      showToast('未能解析出交易数据', 'error');
+    }
+  } catch(e) {
+    showDebug(debugDiv, `❌ 解析失败: ${e.message}\n\n${e.stack}`, 'error');
+    showToast('CSV 解析失败', 'error');
+  }
+}
+
+function detectBinance(lines, delimiter) {
+  // Look for keywords in Binance format
+  const sample = lines.slice(0, 5).join(' ');
+  return sample.includes('保证金模式') || sample.includes('持仓方向') || sample.includes('入场价格') || 
+         sample.includes('结算盈亏') || sample.includes('平均收盘价');
+}
+
+function detectUnified(lines, delimiter) {
+  // Look for 统一交易明细 format
+  const sample = lines.slice(0, 5).join(' ');
+  return sample.includes('委托ID') || sample.includes('交易ID') || sample.includes('用户ID');
+}
+
+function parseBinanceCSV(lines, delimiter, warnings, skipFn) {
+  const trades = [];
+  let headerIdx = -1;
+  
+  // Find header row
+  for (let i = 0; i < lines.length; i++) {
+    const parts = lines[i].split(delimiter).map(s => s.trim());
+    if (parts.some(p => p.includes('代币名称') || p.includes('币种名称') || p.includes('币对'))) {
+      headerIdx = i;
+      break;
+    }
+  }
+  
+  if (headerIdx === -1) {
+    warnings.push('未找到表头行，尝试使用默认列映射');
+    // Try without header - assume column order
+    const startIdx = lines.findIndex(l => {
+      const parts = l.split(delimiter);
+      return parts.length >= 6 && parts.some(p => p.includes('USDT') || p.includes('BTC'));
+    });
+    if (startIdx === -1) return trades;
+    
+    for (let i = startIdx; i < lines.length; i++) {
+      const parts = lines[i].split(delimiter).map(s => s.trim());
+      if (parts.length < 6) { skipFn(); continue; }
+      
+      try {
+        const trade = parseBinanceRow(parts);
+        if (trade) trades.push(trade);
+      } catch(e) { skipFn(); }
+    }
+    return trades;
+  }
+  
+  // Parse from header
+  const headerParts = lines[headerIdx].split(delimiter).map(s => s.trim());
+  const colMap = {
+    symbol: -1, margin: -1, direction: -1, entryPrice: -1,
+    avgClosePrice: -1, maxOpen: -1, closedQty: -1, settledPnl: -1,
+    opened: -1, closed: -1, status: -1
+  };
+  
+  const keywordMap = {
+    '代币名称': 'symbol', '币种名称': 'symbol', '币对': 'symbol',
+    '保证金模式': 'margin', '持仓方向': 'direction', '入场价格': 'entryPrice',
+    '平均收盘价': 'avgClosePrice', '最大未平仓合约': 'maxOpen',
+    '已平仓量': 'closedQty', '结算盈亏': 'settledPnl',
+    '已打开': 'opened', '已关闭': 'closed', '状态': 'status'
+  };
+  
+  headerParts.forEach((h, i) => {
+    for (const [kw, field] of Object.entries(keywordMap)) {
+      if (h.includes(kw)) { colMap[field] = i; break; }
+    }
+  });
+  
+  for (let i = headerIdx + 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) { skipFn(); continue; }
+    const parts = line.split(delimiter).map(s => s.trim());
+    if (parts.length < 6) { skipFn(); continue; }
+    
+    // Skip if looks like another header or user ID row
+    if (parts.some(p => p.includes('代币名称')) || parts.some(p => p.startsWith('用户ID'))) {
+      skipFn(); continue;
+    }
+    
+    try {
+      const symbol = colMap.symbol >= 0 ? parts[colMap.symbol] : parts[0];
+      const direction = colMap.direction >= 0 ? parts[colMap.direction] : (parts[2] || 'Long');
+      const entryStr = colMap.entryPrice >= 0 ? parts[colMap.entryPrice] : (parts[3] || '0');
+      const exitStr = colMap.avgClosePrice >= 0 ? parts[colMap.avgClosePrice] : (parts[4] || '0');
+      const pnlStr = colMap.settledPnl >= 0 ? parts[colMap.settledPnl] : (parts[7] || '0');
+      const openDateStr = colMap.opened >= 0 ? parts[colMap.opened] : (parts[9] || '');
+      const closeDateStr = colMap.closed >= 0 ? parts[colMap.closed] : (parts[10] || '');
+      
+      const dir = direction.includes('Short') ? 'Short' : direction.includes('空') ? 'Short' : 'Long';
+      
+      const entryPrice = parseFloat(entryStr) || 0;
+      const exitPrice = parseFloat(exitStr) || 0;
+      const pnl = parseFloat(pnlStr) || 0;
+      
+      // Parse dates - Binance uses dd-MM-yy HH:mm:ss format
+      const openDate = parseBinanceDate(openDateStr);
+      const closeDate = parseBinanceDate(closeDateStr);
+      
+      trades.push({
+        id: generateId(),
+        symbol: symbol.replace(/-/g, '').toUpperCase(),
+        direction: dir,
+        entryPrice: entryPrice,
+        exitPrice: exitPrice,
+        qty: parseFloat(colMap.closedQty >= 0 ? parts[colMap.closedQty] : parts[5]) || 0,
+        pnl: pnl,
+        exchange: 'Binance',
+        product: '永续合约',
+        openDate: openDate,
+        closeDate: closeDate,
+        notes: `CSV导入 - Binance ${dir === 'Short' ? '做空' : '做多'}`,
+        signals: [],
+        emotions: [],
+        errors: [],
+        imageData: null,
+        updatedAt: new Date().toISOString()
+      });
+    } catch(e) { skipFn(); }
+  }
+  
+  return trades;
+}
+
+function parseBinanceDate(dateStr) {
+  if (!dateStr || dateStr.trim() === '') return '';
+  try {
+    const parts = dateStr.trim().split(/[\s:-]+/);
+    if (parts.length >= 5) {
+      // dd-MM-yy HH:mm:ss
+      const day = parseInt(parts[0]);
+      const month = parseInt(parts[1]) - 1;
+      let year = parseInt(parts[2]);
+      if (year < 100) year += 2000;
+      const hour = parseInt(parts[3]);
+      const min = parseInt(parts[4]);
+      const sec = parts.length > 5 ? parseInt(parts[5]) : 0;
+      const d = new Date(year, month, day, hour, min, sec);
+      if (!isNaN(d.getTime())) {
+        return d.toISOString().slice(0, 19).replace('T', ' ');
+      }
+    }
+  } catch(e) {}
+  return dateStr;
+}
+
+function parseUnifiedCSV(lines, delimiter, warnings, skipFn) {
+  const trades = [];
+  let headerIdx = -1;
+  
+  // Find header row with 委托ID
+  for (let i = 0; i < lines.length; i++) {
+    const parts = lines[i].split(delimiter).map(s => s.trim());
+    if (parts.some(p => p === '委托ID')) {
+      headerIdx = i;
+      break;
+    }
+    // Skip user ID rows
+    if (parts.some(p => p.startsWith('用户ID'))) skipFn();
+  }
+  
+  if (headerIdx === -1) {
+    warnings.push('未找到表头行(委托ID)');
+    return trades;
+  }
+  
+  const headerParts = lines[headerIdx].split(delimiter).map(s => s.trim());
+  
+  // Map columns
+  const colMap = {
+    orderId: -1, tradeId: -1, time: -1, type: -1, symbol: -1,
+    qty: -1, qtyUnit: -1, price: -1, priceUnit: -1,
+    amount: -1, amountUnit: -1, liquidity: -1, fee: -1, feeUnit: -1
+  };
+  
+  const keywordMap = {
+    '委托ID': 'orderId', '交易ID': 'tradeId', '交易时间': 'time',
+    '交易类型': 'type', '交易品种': 'symbol', '数量': 'qty',
+    '数量单位': 'qtyUnit', '成交价格': 'price', '成交价单位': 'priceUnit',
+    '成交额': 'amount', '成交额单位': 'amountUnit', '流动性方向': 'liquidity',
+    '手续费': 'fee', '手续费单位': 'feeUnit'
+  };
+  
+  headerParts.forEach((h, i) => {
+    for (const [kw, field] of Object.entries(keywordMap)) {
+      if (h.includes(kw)) { colMap[field] = i; break; }
+    }
+  });
+  
+  for (let i = headerIdx + 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) { skipFn(); continue; }
+    const parts = line.split(delimiter).map(s => s.trim());
+    
+    // Skip user ID rows, separator rows, repeated headers
+    if (parts.some(p => p.startsWith('用户ID')) || parts.some(p => p === '委托ID') || parts.some(p => p.startsWith('---'))) {
+      skipFn(); continue;
+    }
+    
+    if (parts.length < 6) { skipFn(); continue; }
+    
+    try {
+      const symbol = colMap.symbol >= 0 ? parts[colMap.symbol] : parts[4];
+      const price = parseFloat(colMap.price >= 0 ? parts[colMap.price] : parts[7]) || 0;
+      const qty = parseFloat(colMap.qty >= 0 ? parts[colMap.qty] : parts[5]) || 0;
+      const amount = parseFloat(colMap.amount >= 0 ? parts[colMap.amount] : parts[9]) || 0;
+      const fee = parseFloat(colMap.fee >= 0 ? parts[colMap.fee] : parts[12]) || 0;
+      const time = colMap.time >= 0 ? parts[colMap.time] : (parts[2] || '');
+      
+      // Determine direction from liquidity or type
+      let direction = 'Long';
+      const liquidity = colMap.liquidity >= 0 ? parts[colMap.liquidity] : (parts[11] || '');
+      if (liquidity.includes('吃单') || liquidity.includes('Taker') || liquidity.includes('卖')) direction = 'Short';
+      if (liquidity.includes('挂单') || liquidity.includes('Maker') || liquidity.includes('买')) direction = 'Long';
+      
+      // Clean symbol
+      let cleanSymbol = symbol.replace(/-/g, '').toUpperCase();
+      if (cleanSymbol.endsWith('SWAP')) cleanSymbol = cleanSymbol.replace('SWAP', '');
+      if (cleanSymbol.endsWith('USDT') || cleanSymbol.endsWith('USD') || cleanSymbol.endsWith('BUSD')) {
+        // Symbol is fine
+      }
+      
+      // PnL estimation: if it's a close trade, approximate
+      const pnl = -fee; // approximate using negative fee as rough pnl
+      
+      trades.push({
+        id: generateId(),
+        symbol: cleanSymbol,
+        direction: direction,
+        entryPrice: price,
+        exitPrice: price,
+        qty: qty,
+        pnl: pnl,
+        exchange: 'Binance',
+        product: parts[colMap.type >= 0 ? colMap.type : 3].includes('永续') ? '永续合约' : '交割合约',
+        openDate: time,
+        closeDate: time,
+        notes: `CSV导入 - 统一交易明细`,
+        signals: [],
+        emotions: [],
+        errors: [],
+        imageData: null,
+        updatedAt: new Date().toISOString()
+      });
+    } catch(e) { skipFn(); }
+  }
+  
+  return trades;
+}
+
+function parseGenericCSV(lines, delimiter, warnings, skipFn) {
+  const trades = [];
+  let startIdx = 0;
+  
+  // Skip header-like first rows that have text headers
+  while (startIdx < lines.length && startIdx < 3) {
+    const parts = lines[startIdx].split(delimiter);
+    if (parts.length > 1 && isNaN(parseFloat(parts[1])) && parts.some(p => p.includes('ID') || p.includes('价格') || p.includes('数量'))) {
+      skipFn();
+      startIdx++;
+    } else {
+      break;
+    }
+  }
+  
+  for (let i = startIdx; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) { skipFn(); continue; }
+    const parts = line.split(delimiter).map(s => s.trim());
+    if (parts.length < 4) { skipFn(); continue; }
+    
+    // Skip if looks like header
+    if (isNaN(parseFloat(parts[0]))) { skipFn(); continue; }
+    
+    try {
+      const pnl = parseFloat(parts[parts.length - 1]) || 0;
+      const price = parts.length > 3 ? (parseFloat(parts[2]) || parseFloat(parts[1]) || 0) : 0;
+      
+      trades.push({
+        id: generateId(),
+        symbol: parts[0].toUpperCase(),
+        direction: 'Long',
+        entryPrice: price,
+        exitPrice: price,
+        qty: parseFloat(parts[1]) || 0,
+        pnl: pnl,
+        exchange: 'Other',
+        product: '永续合约',
+        openDate: parts.length > 4 ? parts[4] : '',
+        closeDate: parts.length > 5 ? parts[5] : '',
+        notes: `CSV导入 - 通用格式`,
+        signals: [],
+        emotions: [],
+        errors: [],
+        imageData: null,
+        updatedAt: new Date().toISOString()
+      });
+    } catch(e) { skipFn(); }
+  }
+  
+  return trades;
+}
+
+function showDebug(div, text, type) {
+  div.textContent = text;
+  div.className = `debug-section ${type}`;
+  div.style.display = 'block';
+}
+
+// ===== Data Export/Import =====
+function exportData() {
+  const data = JSON.stringify(trades, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tradelens_backup_${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('数据已导出', 'success');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (Array.isArray(data)) {
+        trades = data;
+        saveState();
+        renderDashboard();
+        renderTradeList();
+        renderCalendar();
+        populateFilterSymbols();
+        updateCounts();
+        showToast(`已导入 ${trades.length} 条交易`, 'success');
+      } else {
+        showToast('无效的导入文件', 'error');
+      }
+    } catch(e) {
+      showToast('文件解析失败', 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function clearAllData() {
+  if (!confirm('确定要清除所有交易数据吗？此操作不可撤销！')) return;
+  if (!confirm('再次确认：清除所有数据？')) return;
+  trades = [];
+  saveState();
+  renderDashboard();
+  renderTradeList();
+  renderCalendar();
+  populateFilterSymbols();
+  updateCounts();
+  showToast('所有数据已清除', 'info');
+}
+
+// ===== Sample Data =====
+function loadSampleData() {
+  const now = new Date();
+  const sampleTrades = [
+    { id: generateId(), symbol:'BTCUSDT', direction:'Long', entryPrice:67500, exitPrice:68900, qty:0.5, pnl:700, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -30), closeDate:dateStr(now, -28), signals:['BOS','FVG'], emotions:['冷静','自信'], errors:[], notes:'BTC突破前高形成BOS，FVG回补后入场', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'ETHUSDT', direction:'Short', entryPrice:3520, exitPrice:3380, qty:2, pnl:280, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -25), closeDate:dateStr(now, -23), signals:['Order Block','Killzone'], emotions:['冷静'], errors:[], notes:'伦敦Killzone，OB被测试后反转做空', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'SOLUSDT', direction:'Long', entryPrice:142, exitPrice:138, qty:5, pnl:-200, exchange:'OKX', product:'永续合约', openDate:dateStr(now, -20), closeDate:dateStr(now, -18), signals:['Silver Bullet'], emotions:['急躁','FOMO'], errors:['过早止损','FOMO','扛单'], notes:'银弹信号入场后被过早止损，随后行情启动', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'BTCUSDT', direction:'Short', entryPrice:69500, exitPrice:68200, qty:0.3, pnl:390, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -15), closeDate:dateStr(now, -14), signals:['CHoCH','Premium-Discount'], emotions:['冷静','自信'], errors:[], notes:'4H级别CHoCH，价格处于溢价区，做空回折价区', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'ADAUSDT', direction:'Long', entryPrice:0.38, exitPrice:0.36, qty:1000, pnl:-200, exchange:'Binance', product:'现货', openDate:dateStr(now, -12), closeDate:dateStr(now, -10), signals:['Liquidity Sweep'], emotions:['贪婪','兴奋'], errors:['重仓','计划外交易','没等确认入场'], notes:'看到流动性扫荡后冲动入场，没有等POI确认', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'DOGEUSDT', direction:'Long', entryPrice:0.085, exitPrice:0.092, qty:5000, pnl:350, exchange:'OKX', product:'永续合约', openDate:dateStr(now, -8), closeDate:dateStr(now, -6), signals:['MSS','供需区'], emotions:['冷静'], errors:[], notes:'MSS确认后回踩供需区入场', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'LINKUSDT', direction:'Short', entryPrice:18.5, exitPrice:19.2, qty:30, pnl:-210, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -5), closeDate:dateStr(now, -3), signals:['IFVG','Wyckoff'], emotions:['犹豫','后悔'], errors:['晚止损','逆势','忽略大趋势'], notes:'逆势做空，IFVG失败后没有及时止损，忽略了大趋势方向', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'ETHUSDT', direction:'Long', entryPrice:3450, exitPrice:3580, qty:1.5, pnl:195, exchange:'OKX', product:'永续合约', openDate:dateStr(now, -2), closeDate:dateStr(now, -1), signals:['OTE','POI','供需区'], emotions:['冷静','满意'], errors:[], notes:'亚洲Killzone出现POI，OTE区域完美入场', updatedAt:now.toISOString() }
+  ];
+  
+  // Add current date trades
+  const todayPnls = [120, -85, 45];
+  todayPnls.forEach((pnl, i) => {
+    sampleTrades.push({
+      id: generateId(),
+      symbol: i === 0 ? 'AVAXUSDT' : i === 1 ? 'MATICUSDT' : 'ARBUSDT',
+      direction: i === 1 ? 'Short' : 'Long',
+      entryPrice: i === 0 ? 38.5 : i === 1 ? 0.72 : 1.05,
+      exitPrice: i === 0 ? 39.7 : i === 1 ? 0.69 : 1.12,
+      qty: i === 0 ? 20 : i === 1 ? 500 : 200,
+      pnl: pnl,
+      exchange: 'Binance',
+      product: '永续合约',
+      openDate: dateStr(now, 0) + ' 08:30:00',
+      closeDate: dateStr(now, 0) + ' 14:20:00',
+      signals: i === 0 ? ['趋势突破'] : i === 1 ? ['支撑阻力'] : ['K线形态'],
+      emotions: i === 2 ? ['焦虑'] : ['冷静'],
+      errors: i === 1 ? ['早止盈'] : [],
+      notes: i === 0 ? '强势突破做多' : i === 1 ? '阻力位做空但平太早' : '底部形态入场',
+      updatedAt: now.toISOString()
+    });
+  });
+  
+  trades = sampleTrades;
+  saveState();
+  renderDashboard();
+  renderTradeList();
+  renderCalendar();
+  populateFilterSymbols();
+  updateCounts();
+  showToast(`已加载 ${trades.length} 条示例交易`, 'success');
+}
+
+function dateStr(date, offsetDays) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + offsetDays);
+  return d.toISOString().slice(0, 10);
+}
+
+// ===== AI Analysis Page =====
+let analysisImageDataUrl = null;
+
+function setupAnalysisPage() {
+  const zone = document.getElementById('analysis-upload-zone');
+  const fileInput = document.getElementById('analysis-image-input');
+
+  // Click to upload
+  zone.addEventListener('click', () => fileInput.click());
+
+  // Drag events
+  zone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('dragover');
+  });
+  zone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+  });
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+      handleAnalysisImage(e.dataTransfer.files[0]);
+    }
+  });
+
+  // File input change
+  fileInput.addEventListener('change', function(e) {
+    if (this.files.length > 0) handleAnalysisImage(this.files[0]);
+  });
+
+  // Paste support
+  document.addEventListener('paste', function(e) {
+    const page = document.getElementById('page-analysis');
+    if (!page.classList.contains('active')) return;
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        e.preventDefault();
+        const file = items[i].getAsFile();
+        if (file) handleAnalysisImage(file);
+        break;
+      }
+    }
+  });
+
+  // Framework checkbox toggle styling
+  document.querySelectorAll('.analysis-framework-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      const cb = this.querySelector('input');
+      cb.checked = !cb.checked;
+      this.classList.toggle('active', cb.checked);
+    });
+  });
+
+  // Render history on page show
+  renderAnalysisHistory();
+}
+
+function handleAnalysisImage(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    analysisImageDataUrl = e.target.result;
+    const previewDiv = document.getElementById('analysis-image-preview');
+    previewDiv.style.display = 'block';
+    previewDiv.innerHTML = `<img src="${analysisImageDataUrl}" class="analysis-preview-img" alt="分析截图">`;
+    document.getElementById('analysis-upload-zone').style.display = 'none';
+    showToast('✅ 截图已加载', 'success');
+  };
+  reader.onerror = function() {
+    showToast('❌ 图片读取失败', 'error');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function startAnalysis() {
+  const resultsDiv = document.getElementById('analysis-results');
+  const context = document.getElementById('analysis-context').value.trim();
+
+  // Validate image
+  if (!analysisImageDataUrl) {
+    showToast('请先上传交易截图', 'error');
+    return;
+  }
+
+  // Validate API key
+  if (!settings.aiApiKey) {
+    showToast('请先在设置中配置 API Key', 'error');
+    return;
+  }
+
+  // Check if using DeepSeek (no vision support)
+  const apiType = settings.aiApiType || 'deepseek';
+  if (apiType === 'deepseek') {
+    showToast('DeepSeek 不支持图片分析，请在设置中切换到 GPT-4o 或其他支持视觉的模型', 'error');
+    return;
+  }
+
+  // Get selected frameworks
+  const frameworks = [];
+  document.querySelectorAll('.analysis-framework-item').forEach(item => {
+    if (item.querySelector('input').checked) {
+      frameworks.push(item.getAttribute('data-fw'));
+    }
+  });
+
+  if (frameworks.length === 0) {
+    showToast('请至少选择一个分析框架', 'error');
+    return;
+  }
+
+  // Show loading
+  resultsDiv.style.display = 'block';
+  resultsDiv.innerHTML = `
+    <div class="analysis-loading">
+      <div class="spinner"></div>
+      <div>🤖 AI 正在分析交易截图...</div>
+    </div>`;
+
+  // Build frameworks description
+  const fwNames = {
+    ict: 'ICT (Smart Money Concepts)',
+    pa: '价格行为学 (Price Action)',
+    smc: 'SMC (Smart Money Concepts)',
+    harmonic: '谐波形态 (Harmonic Patterns)'
+  };
+  const fwList = frameworks.map(f => fwNames[f] || f).join('、');
+
+  // Build system prompt
+  const systemPrompt = '你是一个专业的加密货币交易分析师，精通ICT、价格行为学、SMC和谐波形态。请用中文回复。';
+
+  const prompt = `请分析这张交易截图，使用以下分析框架：${fwList}。
+
+交易背景：${context || '未提供具体背景'}
+
+请严格按照以下结构化格式输出分析结果（用纯文本，不要用markdown代码块）：
+
+=== 整体判断 ===
+方向：[做多/做空/震荡]
+理由：[简要说明判断依据]
+
+=== 关键点位 ===
+入场区间：[入场价格区间]
+止损位：[止损价格]
+目标1：[第一目标位]
+目标2：[第二目标位]
+目标3：[第三目标位]
+
+=== ICT 分析 ===
+FVG (公平价值缺口): [是否存在，位置]
+Order Block (订单块): [是否存在，位置]
+流动性: [流动性区域分析]
+MSS/CHoCH: [市场结构转变分析]
+Killzone 时段: [相关时段分析]
+
+=== 价格行为分析 ===
+支撑/阻力: [关键S/R位分析]
+K线形态: [识别到的K线形态]
+趋势结构: [趋势状态分析]
+
+=== 加减仓建议 ===
+加仓区域: [加仓价位和理由]
+减仓区域: [减仓价位和理由]
+
+=== 胜率预估 ===
+预估胜率: [X%]
+理由: [简要说明预估理由]`;
+
+  try {
+    const result = await callAiApi([
+      { role: 'system', content: systemPrompt },
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: analysisImageDataUrl } }
+        ]
+      }
+    ]);
+
+    // Parse and display results
+    displayAnalysisResult(result, context, frameworks);
+    saveAnalysisResult({
+      timestamp: new Date().toISOString(),
+      context: context,
+      frameworks: frameworks,
+      result: result,
+      imageDataUrl: analysisImageDataUrl
+    });
+    renderAnalysisHistory();
+    showToast('✅ 分析完成', 'success');
+  } catch(e) {
+    // Check if error is about vision support
+    if (e.message.includes('image') || e.message.includes('vision') || e.message.includes('vision')) {
+      resultsDiv.innerHTML = `<div class="card" style="text-align:center;padding:20px">
+        <div style="font-size:40px;margin-bottom:12px">⚠️</div>
+        <div style="font-size:14px;color:var(--text2)">当前模型不支持图片分析</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:8px">请在设置中切换到 GPT-4o 或其他支持视觉的模型</div>
+      </div>`;
+    } else {
+      resultsDiv.innerHTML = `<div class="card" style="text-align:center;padding:20px">
+        <div style="font-size:40px;margin-bottom:12px">❌</div>
+        <div style="font-size:14px;color:var(--text2)">分析失败</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:8px">${e.message}</div>
+      </div>`;
+    }
+    showToast(`分析失败: ${e.message}`, 'error');
+  }
+}
+
+function displayAnalysisResult(rawResult, context, frameworks) {
+  const resultsDiv = document.getElementById('analysis-results');
+
+  // Parse structured sections from the result
+  let overall = '--';
+  let direction = '--';
+  let levels = '';
+  let ictSection = '';
+  let paSection = '';
+  let positionMgmt = '';
+  let winRate = '';
+
+  // Extract sections
+  const sections = rawResult.split(/={3,}/);
+  sections.forEach(section => {
+    const s = section.trim();
+    if (s.includes('整体判断') || s.includes('整体判断')) {
+      const dirMatch = s.match(/方向[：:]\s*(.+)/);
+      if (dirMatch) direction = dirMatch[1].trim();
+      overall = s;
+    } else if (s.includes('关键点位')) {
+      levels = s;
+    } else if (s.includes('ICT')) {
+      ictSection = s;
+    } else if (s.includes('价格行为') || s.includes('价格行为学')) {
+      paSection = s;
+    } else if (s.includes('加减仓') || s.includes('加减仓建议')) {
+      positionMgmt = s;
+    } else if (s.includes('胜率')) {
+      winRate = s;
+    }
+  });
+
+  // If no sections found via ===, use line-based extraction
+  if (!overall && !levels && !ictSection && !paSection) {
+    const lines = rawResult.split('\n');
+    let currentSection = '';
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed.includes('整体判断') || trimmed.includes('关键点位') || 
+          trimmed.includes('ICT') || trimmed.includes('价格行为') ||
+          trimmed.includes('加减仓') || trimmed.includes('胜率')) {
+        currentSection = trimmed;
+      }
+    });
+    // Fallback: show the whole result as structured text
+    overall = rawResult;
+  }
+
+  // Determine direction class
+  let dirClass = 'sideways';
+  let dirText = '震荡';
+  if (direction.includes('做多') || direction.includes('Long') || direction.includes('long')) {
+    dirClass = 'direction-long';
+    dirText = '做多 📈';
+  } else if (direction.includes('做空') || direction.includes('Short') || direction.includes('short')) {
+    dirClass = 'direction-short';
+    dirText = '做空 📉';
+  }
+
+  // Get framework tags
+  const fwLabels = {ict: 'ICT', pa: '价格行为', smc: 'SMC', harmonic: '谐波'};
+  const fwTags = frameworks.map(f => 
+    `<span class="analysis-result-tag ${f}">${fwLabels[f] || f}</span>`
+  ).join('');
+
+  // Build HTML
+  let html = `<div class="card" style="border-color:var(--accent)">
+    <div class="card-header">
+      <span class="card-title">📊 AI 分析结果</span>
+      <div>${fwTags}</div>
+    </div>
+    <div style="margin-bottom:12px;padding:10px;background:var(--bg2);border-radius:8px;text-align:center">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px">交易方向</div>
+      <div class="result-value ${dirClass}" style="font-size:24px;font-weight:700">${dirText}</div>
+    </div>`;
+
+  // Overall judgment
+  html += `<div class="analysis-result-card">
+    <div class="result-label">🎯 整体判断</div>
+    <div class="result-value">${formatSection(overall)}</div>
+  </div>`;
+
+  // Key levels
+  if (levels) {
+    html += `<div class="analysis-result-card">
+      <div class="result-label">📍 关键点位</div>
+      <div class="result-value">${formatSection(levels)}</div>
+    </div>`;
+  }
+
+  // ICT Analysis
+  if (ictSection) {
+    html += `<div class="analysis-result-card">
+      <div class="result-label"><span class="analysis-result-tag ict">ICT</span> ICT 分析</div>
+      <div class="result-value">${formatSection(ictSection)}</div>
+    </div>`;
+  }
+
+  // Price Action
+  if (paSection) {
+    html += `<div class="analysis-result-card">
+      <div class="result-label"><span class="analysis-result-tag pa">价格行为</span> 价格行为分析</div>
+      <div class="result-value">${formatSection(paSection)}</div>
+    </div>`;
+  }
+
+  // Position management
+  if (positionMgmt) {
+    html += `<div class="analysis-result-card">
+      <div class="result-label">📋 加减仓建议</div>
+      <div class="result-value">${formatSection(positionMgmt)}</div>
+    </div>`;
+  }
+
+  // Win rate
+  if (winRate) {
+    html += `<div class="analysis-result-card">
+      <div class="result-label">🏆 胜率预估</div>
+      <div class="result-value">${formatSection(winRate)}</div>
+    </div>`;
+  }
+
+  // Raw result expandable
+  html += `<details style="margin-top:8px">
+    <summary style="font-size:12px;color:var(--text3);cursor:pointer">查看完整分析原文</summary>
+    <div style="font-size:11px;color:var(--text2);margin-top:8px;white-space:pre-wrap;line-height:1.5;max-height:200px;overflow-y:auto;padding:8px;background:var(--bg2);border-radius:6px">${escapeHtml(rawResult)}</div>
+  </details>`;
+
+  html += `</div>`;
+  resultsDiv.innerHTML = html;
+}
+
+function formatSection(text) {
+  if (!text) return '--';
+  // Remove the header line
+  let lines = text.split('\n');
+  // Filter out section header lines
+  lines = lines.filter(line => {
+    const t = line.trim();
+    return !t.match(/^={3,}/) && !t.match(/^===/) && !t.match(/^(整体判断|关键点位|ICT|价格行为|加减仓|胜率)/);
+  });
+  let result = lines.map(line => line.trim()).filter(l => l).join('\n');
+  // Convert plain text line breaks to HTML
+  result = result.replace(/\n/g, '<br>');
+  // Highlight key terms
+  result = result.replace(/(入场|止损|止盈|目标|支撑|阻力|趋势|突破|FVG|Order Block|MSS|CHoCH|Killzone)/g, 
+    '<strong style="color:var(--accent)">$1</strong>');
+  return result;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function saveAnalysisResult(data) {
+  let history = [];
+  try {
+    const saved = localStorage.getItem('tradelens_analysis');
+    if (saved) history = JSON.parse(saved);
+  } catch(e) {}
+  // Limit to 20 entries
+  history.unshift(data);
+  if (history.length > 20) history = history.slice(0, 20);
+  localStorage.setItem('tradelens_analysis', JSON.stringify(history));
+}
+
+function renderAnalysisHistory() {
+  const container = document.getElementById('analysis-history');
+  if (!container) return;
+
+  let history = [];
+  try {
+    const saved = localStorage.getItem('tradelens_analysis');
+    if (saved) history = JSON.parse(saved);
+  } catch(e) {}
+
+  if (history.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">暂无分析记录</div>';
+    return;
+  }
+
+  let html = '';
+  history.forEach((item, index) => {
+    const date = new Date(item.timestamp);
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+    const pair = item.context || '截图分析';
+    const fwLabels = {ict: '🧠 ICT', pa: '📊 价格行为', smc: '🔄 SMC', harmonic: '🎯 谐波'};
+    const fwText = (item.frameworks || []).map(f => fwLabels[f] || f).join(' ');
+
+    // Extract direction from result
+    let dirBadge = '';
+    const dirMatch = item.result.match(/方向[：:]\s*(.+)/);
+    if (dirMatch) {
+      const dir = dirMatch[1].trim();
+      if (dir.includes('做多') || dir.includes('Long')) {
+        dirBadge = '<span class="direction direction-long" style="font-size:10px">📈 做多</span>';
+      } else if (dir.includes('做空') || dir.includes('Short')) {
+        dirBadge = '<span class="direction direction-short" style="font-size:10px">📉 做空</span>';
+      } else {
+        dirBadge = '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--bg2);color:var(--text2);border:1px solid var(--border)">⚖️ 震荡</span>';
+      }
+    }
+
+    // Get a preview snippet
+    const snippet = item.result.replace(/={3,}.*?\n/g, '').replace(/\n/g, ' ').slice(0, 80) + '...';
+
+    html += `<div class="analysis-history-item" onclick="showAnalysisDetail(${index})">
+      <div class="h-top">
+        <span class="h-pair">${escapeHtml(pair)}</span>
+        <span class="h-date">${dateStr}</span>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
+        <span style="font-size:11px;color:var(--text2)">${fwText}</span>
+        ${dirBadge}
+      </div>
+      <div class="h-summary">${escapeHtml(snippet)}</div>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function showAnalysisDetail(index) {
+  let history = [];
+  try {
+    const saved = localStorage.getItem('tradelens_analysis');
+    if (saved) history = JSON.parse(saved);
+  } catch(e) {}
+
+  if (!history[index]) return;
+
+  const item = history[index];
+  const resultsDiv = document.getElementById('analysis-results');
+  resultsDiv.style.display = 'block';
+
+  // Determine direction
+  let direction = '--';
+  const dirMatch = item.result.match(/方向[：:]\s*(.+)/);
+  if (dirMatch) direction = dirMatch[1].trim();
+
+  let dirClass = 'sideways';
+  let dirText = '震荡';
+  if (direction.includes('做多') || direction.includes('Long')) {
+    dirClass = 'direction-long';
+    dirText = '做多 📈';
+  } else if (direction.includes('做空') || direction.includes('Short')) {
+    dirClass = 'direction-short';
+    dirText = '做空 📉';
+  }
+
+  // Show preview image
+  let imgHtml = '';
+  if (item.imageDataUrl) {
+    imgHtml = `<img src="${item.imageDataUrl}" class="analysis-preview-img" style="max-height:200px;margin-bottom:12px">`;
+  }
+
+  const fwLabels = {ict: 'ICT', pa: '价格行为', smc: 'SMC', harmonic: '谐波'};
+  const fwTags = (item.frameworks || []).map(f => 
+    `<span class="analysis-result-tag ${f}">${fwLabels[f] || f}</span>`
+  ).join('');
+
+  const date = new Date(item.timestamp);
+  const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+
+  resultsDiv.innerHTML = `<div class="card" style="border-color:var(--accent)">
+    <div class="card-header">
+      <span class="card-title">📊 历史分析详情</span>
+      <span style="font-size:11px;color:var(--text3)">${dateStr}</span>
+    </div>
+    ${imgHtml}
+    ${item.context ? `<div style="margin-bottom:8px;font-size:12px;color:var(--text2)">📝 ${escapeHtml(item.context)}</div>` : ''}
+    <div style="margin-bottom:12px;display:flex;gap:4px;flex-wrap:wrap">${fwTags}</div>
+    <div style="margin-bottom:12px;padding:10px;background:var(--bg2);border-radius:8px;text-align:center">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px">交易方向</div>
+      <div class="result-value ${dirClass}" style="font-size:24px;font-weight:700">${dirText}</div>
+    </div>
+    <div style="font-size:13px;line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;padding:8px;background:var(--bg2);border-radius:6px">${escapeHtml(item.result)}</div>
+  </div>`;
+
+  // Scroll to results
+  resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Hook into page show - enhance showPage to handle analysis page
+showPage = function(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById(`page-${pageId}`);
+  if (page) page.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navMap = {dashboard:0,trades:1,calendar:2,analysis:3,settings:4};
+  const navItems = document.querySelectorAll('.nav-item');
+  if (navMap[pageId] !== undefined) navItems[navMap[pageId]].classList.add('active');
+  if (pageId === 'dashboard') renderDashboard();
+  if (pageId === 'trades') renderTradeList();
+  if (pageId === 'calendar') renderCalendar();
+  if (pageId === 'analysis') {
+    renderAnalysisHistory();
+    // Focus the upload zone
+    const zone = document.getElementById('analysis-upload-zone');
+    if (zone) {
+      // Re-show upload zone if no image loaded
+      if (!analysisImageDataUrl) {
+        zone.style.display = 'block';
+        document.getElementById('analysis-image-preview').style.display = 'none';
+      }
+    }
+  }
+};
+
+// Init analysis page on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  setupAnalysisPage();
+});
+
+// ===== Init on Load =====
+document.addEventListener('DOMContentLoaded', init);
+
+async function autoDetectProxy() {
+  const proxyInput = document.getElementById("exchange-proxy-url");
+  const resultDiv = document.getElementById("exchange-test-result");
+  resultDiv.textContent = "⏳ 检测代理中...";
+  resultDiv.style.color = "var(--text2)";
+  try {
+    const resp = await fetch("/api/exchange/auto-detect-proxy");
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.found && data.found.length > 0) {
+        const urls = data.found.map(p => p.url).join("<br>");
+        resultDiv.innerHTML = "✅ 检测到代理：<br>" + urls + "<br>请复制以上地址到代理输入框并保存配置";
+        resultDiv.style.color = "var(--accent)";
+        if (data.found.length === 1) {
+          proxyInput.value = data.found[0].url;
+        }
+      } else {
+        resultDiv.innerHTML = "❌ 未检测到代理软件<br>请确认 Clash/V2Ray 等已启动";
+        resultDiv.style.color = "var(--profit)";
+      }
+    } else {
+      resultDiv.textContent = "❌ 无法连接到服务器";
+      resultDiv.style.color = "var(--profit)";
+    }
+  } catch(e) {
+    resultDiv.textContent = "❌ 请求失败: " + e.message;
+    resultDiv.style.color = "var(--profit)";
+  }
+}
+
+
+
+async function testProxyExit() {
+  const resultDiv = document.getElementById('exchange-test-result');
+  resultDiv.innerHTML = '⏳ 检测代理出口IP...';
+  resultDiv.style.color = 'var(--text2)';
+  try {
+    const resp = await fetch('/api/exchange/proxy-test');
+    if (resp.ok) {
+      const data = await resp.json();
+      let html = '';
+      if (data.in_china) {
+        html = '⚠️ 代理在运行，但出口IP仍在中国！<br>';
+        html += 'IP: ' + data.exit_ip + '<br>';
+        html += '位置: ' + data.location + '<br>';
+        html += 'Binance状态: ❌ 被拒绝<br>';
+        html += '<br><strong>解决方法：</strong><br>';
+        html += '1️⃣ 打开 Clash 面板，切换到 <strong>Global</strong> 模式（不是 Rule 或 Direct）<br>';
+        html += '2️⃣ 选择一个延迟正常的 <strong>海外节点</strong>（日本/新加坡/美国）<br>';
+        html += '3️⃣ 确认后点击「📡 测试连接」重新测试<br>';
+        resultDiv.style.color = 'var(--profit)';
+      } else if (data.binance_reachable) {
+        html = '✅ 代理正常！出口IP在海外。<br>';
+        html += 'IP: ' + data.exit_ip + '<br>';
+        html += '位置: ' + data.location + '<br>';
+        html += 'Binance: ✅ 可连接<br>';
+        resultDiv.style.color = 'var(--accent)';
+      } else {
+        html = '⚠️ 出口IP在海外，但Binance仍拒绝<br>';
+        html += 'IP: ' + data.exit_ip + '<br>';
+        html += 'Binance状态码: ' + data.binance_status + '<br>';
+        html += '换个代理节点试试。<br>';
+        resultDiv.style.color = 'var(--orange-badge)';
+      }
+      resultDiv.innerHTML = html;
+    } else {
+      resultDiv.textContent = '❌ 无法连接到服务器';
+      resultDiv.style.color = 'var(--profit)';
+    }
+  } catch(e) {
+    resultDiv.textContent = '❌ 请求失败';
+    resultDiv.style.color = 'var(--profit)';
+  }
+}
+
+async function checkExchangeDNS() {
+  const resultDiv = document.getElementById("exchange-test-result");
+  resultDiv.innerHTML = "⏳ 检测网络连接中...";
+  resultDiv.style.color = "var(--text2)";
+  try {
+    const resp = await fetch("/api/exchange/dns-check");
+    if (resp.ok) {
+      const data = await resp.json();
+      let html = "";
+      data.results.forEach(r => {
+        const icon = r.tcp_ok ? "✅" : (r.dns_ok ? "⚠️" : "❌");
+        const status = r.tcp_ok ? "可连接" : (r.dns_ok ? "DNS正常但无法连接(可能被墙,需代理)" : "DNS解析失败");
+        html += icon + " " + r.name + ": " + status + "<br>";
+      });
+      resultDiv.innerHTML = html;
+      resultDiv.style.color = "var(--text)";
+    } else {
+      resultDiv.textContent = "❌ 无法连接到服务器";
+      resultDiv.style.color = "var(--profit)";
+    }
+  } catch(e) {
+    resultDiv.textContent = "❌ 请求失败";
+    resultDiv.style.color = "var(--profit)";
+  }
+}
+
+
+// ===== AI 市场分析 =====
+var AI_HISTORY_KEY = "tradelens_market_v2";
+
+async function refreshAIAnalysis() {
+  var btn = document.getElementById("ai-refresh-btn");
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = "⏳ 获取数据...";
+  showSectionLoading("ai-overview");
+  showSectionLoading("ai-trend");
+  showSectionLoading("ai-volatility");
+  showSectionLoading("ai-opportunity");
+  showSectionLoading("ai-levels");
+  try {
+    var data = await fetchMarketData();
+    renderSources(data);
+    renderMarketOverview(data);
+    btn.textContent = "🧠 AI 分析中...";
+    var analysis = await runAIAnalysis(data);
+    if (analysis) {
+      renderAIAnalysis(analysis);
+      saveAnalysisHistory(analysis);
+      renderAnalysisHistory();
+      showToast("✅ 分析完成", "success");
+    } else {
+      showNoAIAnalysis();
+    }
+  } catch(e) {
+    setTimeout(function() { throw e; }, 0);
+    showToast("❌ 分析出错", "error");
+  }
+  btn.disabled = false;
+  btn.textContent = "🔄 刷新分析";
+}
+
+async function fetchMarketData() {
+  var result = { sources: [], ts: new Date().toISOString() };
+  
+  try {
+    var r = await fetch("/api/proxy?url=" + encodeURIComponent("https://api.coingecko.com/api/v3/global"));
+    if (r.ok) { var j = await r.json(); result.global = (j.data || j).data || j.data || j; result.sources.push("CoinGecko"); }
+  } catch(e) {}
+  
+  try {
+    var r2 = await fetch("/api/proxy?url=" + encodeURIComponent("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&sparkline=false"));
+    if (r2.ok) { var j2 = await r2.json(); if (Array.isArray(j2)) result.topCoins = j2; }
+  } catch(e) {}
+  
+  try {
+    var r3 = await fetch("/api/proxy?url=" + encodeURIComponent("https://api.alternative.me/fng/?limit=1"));
+    if (r3.ok) { var j3 = await r3.json(); if (j3.data) result.fearGreed = j3.data[0]; result.sources.push("FearGreed"); }
+  } catch(e) {}
+  
+  try {
+    var symbols = JSON.stringify(["BTCUSDT","ETHUSDT","BNBUSDT","SOLUSDT","XRPUSDT","DOGEUSDT","ADAUSDT","AVAXUSDT","DOTUSDT","LINKUSDT"]);
+    var r4 = await fetch("/api/proxy?url=" + encodeURIComponent("https://api.binance.com/api/v3/ticker/24hr?symbols=" + symbols));
+    if (r4.ok) { var j4 = await r4.json(); if (Array.isArray(j4)) result.binance = j4; result.sources.push("Binance"); }
+  } catch(e) {}
+  
+  try {
+    var r5 = await fetch("/api/proxy?url=" + encodeURIComponent("https://api.coinglass.com/api/v2/liquidation/v2?range=24h"));
+    if (r5.ok) { var j5 = await r5.json(); result.liquidations = j5.data || j5; result.sources.push("CoinGlass"); }
+  } catch(e) {}
+  
+  try {
+    var r6 = await fetch("/api/proxy?url=" + encodeURIComponent("https://cdn.jin10.com/data_center/reports/market_news.json"));
+    if (r6.ok) { var j6 = await r6.json(); result.jin10News = j6; result.sources.push("Jin10"); }
+  } catch(e) {}
+  
+  try {
+    var r7 = await fetch("/api/proxy?url=" + encodeURIComponent("https://financialmodelingprep.com/api/v3/quote/SPY,QQQ,GLD?apikey=demo"));
+    if (r7.ok) { var j7 = await r7.json(); if (Array.isArray(j7)) result.stocks = j7; result.sources.push("Stocks"); }
+  } catch(e) {}
+  
+  return result;
+}
+
+function renderSources(data) {
+  var div = document.getElementById("ai-sources");
+  if (!div) return;
+  var time = new Date().toLocaleString("zh-CN");
+  var srcs = data.sources.length > 0 ? data.sources.join(" | ") : "(离线)";
+  div.innerHTML = "<span style=\"color:var(--accent)\">✅ " + time + "</span> 数据源: " + srcs;
+}
+
+function fmtNum(n) {
+  if (!n) return "0";
+  if (n >= 1e12) return (n / 1e12).toFixed(2) + "T";
+  if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+  if (n >= 1e3) return (n / 1e3).toFixed(2) + "K";
+  return n.toFixed(2);
+}
+
+function renderMarketOverview(data) {
+  var div = document.getElementById("ai-overview");
+  var time = document.getElementById("ai-time");
+  if (!div) return;
+  if (time) time.textContent = new Date().toLocaleString("zh-CN");
+  
+  var html = "<div style=\"font-size:13px;line-height:1.8\">";
+  
+  // Stats grid
+  html += "<div class=\"stats-grid\" style=\"grid-template-columns:repeat(auto-fill,minmax(140px,1fr))\">";
+  if (data.global) {
+    var g = data.global;
+    var mc = g.total_market_cap ? g.total_market_cap.usd : null;
+    var vol = g.total_volume ? g.total_volume.usd : null;
+    var dom = g.market_cap_percentage ? g.market_cap_percentage.btc : null;
+    if (mc) html += "<div class=\"stat-card\"><div class=\"stat-label\">总市值</div><div class=\"stat-value\" style=\"font-size:14px\">$" + fmtNum(mc) + "</div></div>";
+    if (vol) html += "<div class=\"stat-card\"><div class=\"stat-label\">24h成交</div><div class=\"stat-value\" style=\"font-size:14px\">$" + fmtNum(vol) + "</div></div>";
+    if (dom) html += "<div class=\"stat-card\"><div class=\"stat-label\">BTC Dominance</div><div class=\"stat-value\" style=\"font-size:14px;color:var(--accent)\">" + dom.toFixed(2) + "%</div></div>";
+  }
+  if (data.fearGreed) {
+    var fv = parseInt(data.fearGreed.value);
+    var fc = fv > 50 ? "var(--profit)" : "var(--loss)";
+    html += "<div class=\"stat-card\"><div class=\"stat-label\">恐惧贪婪</div><div class=\"stat-value\" style=\"font-size:14px;color:" + fc + "\">" + fv + " (" + data.fearGreed.value_classification + ")</div></div>";
+  }
+  html += "</div>";
+  
+  // Binance tickers
+  if (data.binance && data.binance.length > 0) {
+    html += "<div style=\"margin-top:10px;font-weight:600;font-size:13px;margin-bottom:6px\">主流币实时</div>";
+    html += "<div style=\"display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px\">";
+    for (var bi = 0; bi < data.binance.length; bi++) {
+      var t = data.binance[bi];
+      var chg = parseFloat(t.priceChangePercent);
+      var clr = chg >= 0 ? "var(--profit)" : "var(--loss)";
+      html += "<div style=\"background:var(--bg3);padding:8px;border-radius:var(--radius-sm);font-size:12px\">";
+      html += "<div style=\"font-weight:600\">" + t.symbol.replace("USDT", "") + "</div>";
+      html += "<div style=\"color:var(--text2)\">$" + parseFloat(t.lastPrice).toFixed(5) + "</div>";
+      html += "<div style=\"color:" + clr + ";font-weight:600\">" + (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%</div></div>";
+    }
+    html += "</div>";
+  }
+  
+  // Top movers
+  if (data.topCoins && data.topCoins.length > 0) {
+    var sorted = data.topCoins.slice().sort(function(a,b) {
+      return Math.abs(b.price_change_percentage_24h || 0) - Math.abs(a.price_change_percentage_24h || 0);
+    });
+    html += "<div style=\"margin-top:10px;font-weight:600;font-size:13px;margin-bottom:6px\">24h波动最大</div>";
+    html += "<div style=\"display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px\">";
+    for (var si = 0; si < Math.min(6, sorted.length); si++) {
+      var c = sorted[si];
+      var chg2 = c.price_change_percentage_24h || 0;
+      var clr2 = chg2 >= 0 ? "var(--profit)" : "var(--loss)";
+      html += "<div style=\"background:var(--bg3);padding:8px;border-radius:var(--radius-sm);font-size:12px\">";
+      html += "<div style=\"font-weight:600\">" + (c.symbol || "").toUpperCase() + "</div>";
+      html += "<div style=\"color:" + clr2 + ";font-weight:600\">" + (chg2 >= 0 ? "+" : "") + chg2.toFixed(2) + "%</div></div>";
+    }
+    html += "</div>";
+  }
+  
+  if (!data.global && !data.binance && !data.topCoins) {
+    html += "<div style=\"text-align:center;padding:24px;color:var(--text3);font-size:13px\">⚠️ 无法获取实时数据，请确认 start_server.py 正在运行</div>";
+  }
+  
+  html += "</div>";
+  div.innerHTML = html;
+}
+
+async function runAIAnalysis(data) {
+  var ak = null;
+  try { ak = settings.aiApiKey; } catch(e) {}
+  if (!ak) { try { var inp = document.getElementById("ai-api-key"); if (inp && inp.value) ak = inp.value; } catch(e) {} }
+  if (!ak) { try { var sv = JSON.parse(localStorage.getItem("tradelens_settings") || "{}"); if (sv.aiApiKey) ak = sv.aiApiKey; } catch(e) {} }
+  if (!ak) { showToast("未检测到 API Key，请先在设置页配置并保存", "error"); return null; }
+  
+  var prompt = "你是一位专业的金融市场分析师。请基于以下实时市场数据，生成一份完整的市场分析报告。";
+  prompt += "\\n\\n## 市场数据\\n\\n";
+  
+  if (data.global) {
+    var g = data.global;
+    prompt += "- 总市值: " + (g.total_market_cap ? "$" + fmtNum(g.total_market_cap.usd) : "N/A");
+    if (g.market_cap_percentage) prompt += "\\n- BTC Dominance: " + g.market_cap_percentage.btc.toFixed(2) + "%";
+    prompt += "\\n";
+  }
+  if (data.fearGreed) prompt += "- F&G: " + data.fearGreed.value + "/100\\n";
+  
+  if (data.binance) {
+    prompt += "\\n主流币24h:\\n";
+    for (var bi2 = 0; bi2 < data.binance.length; bi2++) {
+      var t2 = data.binance[bi2];
+      prompt += "- " + t2.symbol + ": $" + parseFloat(t2.lastPrice).toFixed(5) + " (" + parseFloat(t2.priceChangePercent).toFixed(2) + "%)\\n";
+    }
+  }
+  
+  if (data.topCoins) {
+    var sorted2 = data.topCoins.slice().sort(function(a,b) {
+      return Math.abs(b.price_change_percentage_24h || 0) - Math.abs(a.price_change_percentage_24h || 0);
+    });
+    prompt += "\\n波动最大:\\n";
+    for (var si2 = 0; si2 < Math.min(5, sorted2.length); si2++) {
+      var c2 = sorted2[si2];
+      prompt += "- " + (c2.symbol || "").toUpperCase() + ": " + (c2.price_change_percentage_24h || 0).toFixed(2) + "%\\n";
+    }
+  }
+  
+  prompt += "\\n请按以下五个板块输出分析（使用中文，每个板块保留emoji标题）：\\n\\n";
+  prompt += "📊 大盘概况\\n\\n📈 走势预测\\n\\n⚡ 异动监测\\n\\n🎯 机会提示\\n\\n📋 具体点位与建议\\n\\n";
+  prompt += "要求：内容简洁具体，关键数据加粗，给出明确的支撑/阻力位数值。";
+  
+  try {
+    var resp = await fetch("/api/ai/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        apiType: "deepseek",
+        apiKey: ak,
+        model: settings.aiModel || "deepseek-chat",
+        messages: [
+          { role: "system", content: "你是一位专业的金融市场分析师" },
+          { role: "user", content: prompt }
+        ]
+      })
+    });
+    if (resp.ok) {
+      var json = await resp.json();
+      if (json.status === "success" && json.data) {
+        return json.data.choices ? json.data.choices[0].message.content : (json.data.text || "");
+      } else {
+        // Show the server error message
+        var errMsg = json.message || "API调用失败";
+        showToast("⚠️ " + errMsg, "error");
+        return null;
+      }
+    } else {
+      var errText = "";
+      try { errText = (await resp.json()).message || ""; } catch(e) {}
+      showToast("⚠️ 服务器错误: " + (errText || resp.status), "error");
+      return null;
+    }
+  } catch(e) {
+    showToast("❌ 网络错误: 请确认服务器正在运行", "error");
+    return null;
+  }
+}
+function renderAIAnalysis(text) {
+  if (!text) return;
+  var sections = {
+    "\\ud83d\\udcca": "ai-overview",
+    "\\ud83d\\udcc8": "ai-trend",
+    "\\u26a1": "ai-volatility",
+    "\\ud83c\\udfaf": "ai-opportunity",
+    "\\ud83d\\udccb": "ai-levels"
+  };
+  
+  // Use the actual emoji characters, not escape sequences
+  var actualSections = {
+    "📊": "ai-overview",
+    "📈": "ai-trend",
+    "⚡": "ai-volatility",
+    "🎯": "ai-opportunity",
+    "📋": "ai-levels"
+  };
+  
+  var emojis = ["📊", "📈", "⚡", "🎯", "📋"];
+  var parsed = 0;
+  
+  for (var ei = 0; ei < emojis.length; ei++) {
+    var em = emojis[ei];
+    var sid = actualSections[em];
+    if (!sid) continue;
+    
+    var start = text.indexOf(em);
+    if (start < 0) continue;
+    
+    var end = text.length;
+    for (var ej = ei + 1; ej < emojis.length; ej++) {
+      var nextIdx = text.indexOf(emojis[ej], start + 2);
+      if (nextIdx > start && nextIdx < end) end = nextIdx;
+    }
+    
+    var content = text.substring(start, end).trim();
+    parsed++;
+    
+    var div = document.getElementById(sid);
+    if (!div) continue;
+    
+    // Remove the emoji title line
+    var lines = content.split("\\n");
+    if (lines[0] && lines[0].trim().match(/^[📊📈⚡🎯📋]/)) lines.shift();
+    var body = lines.join("\\n").trim();
+    body = body.replace(/\\*\\*(.+?)\\*\\*/g, "<strong>$1</strong>");
+    body = body.replace(/\\n/g, "<br>");
+    body = body.replace(/- /g, "• ");
+    
+    div.innerHTML = "<div style=\"font-size:13px;line-height:1.8;color:var(--text2);white-space:pre-wrap\">" + body + "</div>";
+  }
+  
+  if (parsed === 0) {
+    var mainDiv = document.getElementById("ai-overview");
+    if (mainDiv) {
+      mainDiv.innerHTML = "<div style=\"font-size:13px;line-height:1.8;color:var(--text2);white-space:pre-wrap\">" + escHtml(text) + "</div>";
+    }
+  }
+}
+
+function escHtml(t) {
+  var d = document.createElement("div");
+  d.textContent = t;
+  return d.innerHTML;
+}
+
+function showSectionLoading(id) {
+  var div = document.getElementById(id);
+  if (div) div.innerHTML = "<div style=\"text-align:center;padding:24px;color:var(--text3);font-size:13px\">⏳ 加载中...</div>";
+}
+
+function showNoAIAnalysis() {
+  var msg = "⚠️ AI 分析不可用。请确保设置了 DeepSeek API Key 且服务器正在运行。";
+  var ids = ["ai-trend", "ai-volatility", "ai-opportunity", "ai-levels"];
+  for (var i = 0; i < ids.length; i++) {
+    var d = document.getElementById(ids[i]);
+    if (d) d.innerHTML = "<div style=\"text-align:center;padding:24px;color:var(--text3);font-size:13px\">" + msg + "</div>";
+  }
+}
+
+// ===== History =====
+function saveAnalysisHistory(text) {
+  try {
+    var h = JSON.parse(localStorage.getItem(AI_HISTORY_KEY) || "[]");
+    h.unshift({ id: Date.now(), ts: new Date().toISOString(), text: text, preview: (text || "").substring(0, 100) });
+    if (h.length > 20) h.length = 20;
+    localStorage.setItem(AI_HISTORY_KEY, JSON.stringify(h));
+  } catch(e) {}
+}
+
+function renderAnalysisHistory() {
+  var div = document.getElementById("ai-history");
+  if (!div) return;
+  try {
+    var h = JSON.parse(localStorage.getItem(AI_HISTORY_KEY) || "[]");
+    if (h.length === 0) {
+      div.innerHTML = "<div style=\"text-align:center;padding:24px;color:var(--text3);font-size:13px\">暂无记录</div>";
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < h.length; i++) {
+      var item = h[i];
+      var t = new Date(item.ts).toLocaleString("zh-CN");
+      html += "<div class=\"settings-row\" style=\"cursor:pointer\" onclick=\"viewAnalysisHistory(" + i + ")\">";
+      html += "<div style=\"flex:1\"><div style=\"font-size:12px;font-weight:600\">" + t + "</div>";
+      html += "<div style=\"font-size:11px;color:var(--text3);margin-top:2px\">" + escHtml(item.preview || "") + "...</div></div>";
+      html += "<div>></div></div>";
+    }
+    div.innerHTML = html;
+  } catch(e) {
+    div.innerHTML = "<div style=\"text-align:center;padding:24px;color:var(--text3)\">加载失败</div>";
+  }
+}
+
+function viewAnalysisHistory(idx) {
+  try {
+    var h = JSON.parse(localStorage.getItem(AI_HISTORY_KEY) || "[]");
+    if (idx >= 0 && idx < h.length) {
+      renderAIAnalysis(h[idx].text);
+      var time = document.getElementById("ai-time");
+      if (time) time.textContent = "历史: " + new Date(h[idx].ts).toLocaleString("zh-CN");
+      showToast("📜 已加载历史分析", "info");
+    }
+  } catch(e) {}
+}
+
+function clearAnalysisHistory() {
+  if (confirm("确定清空所有分析历史？")) {
+    localStorage.removeItem(AI_HISTORY_KEY);
+    renderAnalysisHistory();
+    showToast("已清空", "info");
+  }
+}
+
+</script>
+</body>
+</html>
