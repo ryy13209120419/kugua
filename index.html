@@ -23,6 +23,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .nav-item svg{width:26px;height:26px;fill:currentColor;transition:fill .2s}
 .nav-item.active{color:var(--nav-active)}
 .nav-item span{white-space:nowrap;font-weight:500}
+
+/* ===== Collapsible ===== */
+.collapsible-header{cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.collapsible-header:hover{opacity:.8}
+.collapsible-header .arrow{transition:transform .3s ease;font-size:14px;color:var(--text3)}
+.collapsible-header.open .arrow{transform:rotate(180deg)}
+.collapsible-body{overflow:hidden;max-height:0;transition:max-height .5s ease,opacity .3s ease;opacity:0}
+.collapsible-body.open{max-height:2000px;opacity:1}
+
 /* ===== Cards ===== */
 .card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--border);box-shadow:0 2px 8px var(--shadow)}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
@@ -487,7 +496,96 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <button class="btn btn-sm btn-secondary" onclick="showPage('dashboard')">← 返回</button>
     </div>
 
-    <!-- Theme & Currency -->
+        <!-- ⭐ 赞助与关于 (折叠) -->
+    <div class="card" id="support-collapsible">
+      <div class="card-header collapsible-header" onclick="toggleSupportCard()" id="support-toggle">
+        <span class="card-title">⭐ 赞助与关于</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="collapsible-body" id="support-body">
+        <div class="card" style="background:linear-gradient(135deg,var(--card),var(--bg2));border:1px solid var(--accent);text-align:center;padding:24px;margin:0 0 12px 0;border-radius:12px">
+          <div style="font-size:36px;margin-bottom:12px">🥒</div>
+          <h2 style="font-size:20px;margin-bottom:8px;color:var(--accent);margin-top:0">苦瓜大王交易复盘</h2>
+          <p style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:12px">如果这个工具帮你提高了交易水平，欢迎赞助支持！<br>你的支持是我持续改进的动力 ❤️</p>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:10px">📖 功能介绍</div>
+          <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px"><strong>🥒 苦瓜大王交易复盘工具</strong> 是一款面向加密货币交易者的纯前端复盘分析平台，帮助你系统化地回顾每一笔交易，不断优化交易策略。</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">📊</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">交易仪表盘</div>
+              <div style="font-size:9px;color:var(--text3)">盈亏总览 · A-D评级</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">📋</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">交易记录</div>
+              <div style="font-size:9px;color:var(--text3)">记账 · 信号 · 情绪</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">📅</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">日历视图</div>
+              <div style="font-size:9px;color:var(--text3)">盈亏日历 · 按日查看</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">🧠</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">AI 智能分析</div>
+              <div style="font-size:9px;color:var(--text3)">截图分析 · 市场解读</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">⚡</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">实时行情</div>
+              <div style="font-size:9px;color:var(--text3)">币安 · 恐惧贪婪</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">🔒</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">隐私安全</div>
+              <div style="font-size:9px;color:var(--text3)">本地存储 · 零上传</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:6px;font-size:10px;text-align:center;color:var(--text3)">✅ 纯静态 PWA · 无需服务器 · 支持 GitHub Pages · 可添加到主屏幕离线使用</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;text-align:center">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">📱 支付宝打赏</div>
+          <div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:2px;background:var(--bg3);padding:8px 16px;border-radius:6px;display:inline-block">13209120419</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px">长按复制手机号 → 打开支付宝转账</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">💬 联系方式</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#12b7f5,#0a8fdb);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;color:var(--text)">QQ交流群 / 联系作者</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">问题反馈 · 功能建议 · 交易交流</div>
+              <div style="font-size:14px;font-weight:700;color:var(--accent);margin-top:4px;background:var(--bg3);padding:4px 10px;border-radius:4px;display:inline-block">3064376057</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">QQ号，长按复制后添加好友</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:6px">💡 功能建议</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6">有任何功能建议、bug 反馈或合作意向，欢迎通过 QQ 联系。</div>
+          <div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:6px;font-size:11px">
+            <strong>📌 可选反馈内容：</strong><br>• 想要的新功能或改进<br>• 使用中遇到的问题<br>• 希望接入的新交易所<br>• 自定义分析框架支持
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:6px">🌐 关于此站点</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6">
+            <p><strong>TradeLens Pro</strong> 纯静态 PWA 应用<br>数据存储在浏览器本地，不经过任何服务器。</p>
+            <div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:6px;font-size:11px;text-align:center">
+              <span style="color:var(--accent)">✅ 无需服务器 · 完全免费 · 隐私安全</span><br>
+              <span style="color:var(--text3)">所有数据仅保存在你的浏览器中</span>
+            </div>
+            <div style="margin-top:8px;text-align:center;font-size:10px;color:var(--text3)">版本 3.1-GH · 适配 GitHub Pages 部署</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme & Currency --><!-- Theme & Currency -->
     <div class="card">
       <div class="card-header"><span class="card-title">🎨 外观与货币</span></div>
       <div class="settings-row">
@@ -745,10 +843,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
     <span>设置</span>
   </button>
-  <button class="nav-item" onclick="showPage('support')">
-    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-    <span>赞助</span>
-  </button>
+  
 </nav>
 
 <!-- ===== Toast Container ===== -->
@@ -991,6 +1086,14 @@ function formatPnl(pnl) {
 }
 
 // ===== Dashboard =====
+
+// ===== Toggle Support Card =====
+function toggleSupportCard() {
+  var body = document.getElementById('support-body');
+  var toggle = document.getElementById('support-toggle');
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
 function renderDashboard() {
   const count = trades.length;
   document.getElementById('dash-trade-count').textContent = count;
