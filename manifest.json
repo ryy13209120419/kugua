@@ -1,0 +1,24 @@
+﻿{
+  "name": "苦瓜大王交易复盘 | TradeLens Pro",
+  "short_name": "交易复盘",
+  "description": "专业交易日志系统 — 苦瓜大王交易复盘工具",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#e94560",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}
