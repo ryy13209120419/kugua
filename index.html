@@ -390,6 +390,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
           <div class="form-group"><label class="form-label">盈亏 (USD)</label><input class="form-input" id="t-form-pnl" type="number" step="any" placeholder="0.00"></div>
         </div>
         <div class="form-row">
+          <div class="form-group"><label class="form-label">杠杆倍数</label><input class="form-input" id="t-form-leverage" type="number" step="any" placeholder="1.0"></div>
+          <div class="form-group"><label class="form-label">盈亏 (%)</label><input class="form-input" id="t-form-pnl-pct" type="number" step="any" placeholder="0.00"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">本单盈亏比</label><input class="form-input" id="t-form-rrr" type="number" step="any" placeholder="例如 2.5"></div>
+          <div class="form-group"><label class="form-label">持仓时间</label><input class="form-input" id="t-form-hold" type="text" placeholder="例如 2h30m / 3天"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">持仓数量</label><input class="form-input" id="t-form-pos-size" type="number" step="any" placeholder="例如 1000"></div>
+          <div class="form-group"><label class="form-label">保证金 (USD)</label><input class="form-input" id="t-form-margin-amt" type="number" step="any" placeholder="例如 500"></div>
+        </div>
+        <div class="form-row">
           <div class="form-group"><label class="form-label">交易所</label><select class="form-select" id="t-form-exchange"><option value="Binance">Binance</option><option value="OKX">OKX</option><option value="Other">其他</option></select></div>
           <div class="form-group"><label class="form-label">产品类型</label><select class="form-select" id="t-form-product"><option value="永续合约">永续合约</option><option value="交割合约">交割合约</option><option value="现货">现货</option><option value="期权">期权</option></select></div>
         </div>
@@ -478,6 +490,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
           <input type="file" id="t-form-image" accept="image/*" style="width:100%;padding:8px;background:var(--input-bg);border-radius:6px;border:1px solid var(--border);color:var(--text);font-size:13px">
           <div class="image-preview-container" id="image-preview-container"></div>
         </div>
+        <div class="form-group"><label class="form-label">🏆 手动评分（留空则自动计算）</label>
+          <select class="form-select" id="t-form-grade">
+            <option value="">自动计算</option>
+            <option value="A">A - 优秀</option>
+            <option value="B">B - 良好</option>
+            <option value="C">C - 一般</option>
+            <option value="D">D - 差</option>
+          </select></div>
         
         <div style="display:flex;gap:8px;margin-top:16px">
           <button class="btn btn-primary" onclick="saveTrade()" style="flex:1">💾 保存</button>
@@ -630,6 +650,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="settings-row">
         <div><div class="label">📤 导入数据 (JSON)</div></div>
         <input type="file" id="import-json" accept=".json" style="font-size:12px" onchange="importData(event)">
+      </div>
+      <div class="settings-row">
+        <div><div class="label">💾 保存到浏览器</div><div class="desc">一键保存数据</div></div>
+        <button class="btn btn-sm btn-primary" onclick="saveToBrowser()">保存</button>
+      </div>
+      <div class="settings-row">
+        <div><div class="label">🔄 同步以往数据</div><div class="desc">从浏览器恢复数据</div></div>
+        <button class="btn btn-sm btn-accent" onclick="syncFromBrowser()">同步</button>
       </div>
       <div class="settings-row">
         <div><div class="label">🗑️ 清除所有数据</div></div>
@@ -1286,7 +1314,14 @@ function renderTradeList() {
   container.innerHTML = sorted.map(t => {
     const grade = computeGrade(t);
     const pendingBadge = t.reviewStatus === 'pending' ? '<span style="font-size:9px;padding:1px 5px;background:var(--orange-badge);color:#fff;border-radius:6px;margin-left:4px">待复盘</span>' : '';
-    return `<div class="trade-item" onclick="showTradeDetail('${t.id}')">
+    const metricsHtml = `<div style="display:flex;flex-wrap:wrap;gap:2px;margin:6px 0 4px 0;padding:4px 8px;background:var(--bg3);border-radius:6px;justify-content:space-around">
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">持仓</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.positionSize || "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">保证金</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.marginAmt || "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">杠杆</div><div style="font-size:13px;font-weight:600;color:var(--accent);white-space:nowrap">${t.leverage ? t.leverage + "x" : "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">盈亏%</div><div style="font-size:13px;font-weight:600;white-space:nowrap;color:${t.pnlPercent > 0 ? "var(--profit)" : "var(--loss)"}">${t.pnlPercent ? (t.pnlPercent > 0 ? "+" : "") + t.pnlPercent + "%" : "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">盈亏比</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.riskRewardRatio || "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">持仓时间</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.holdDuration || "-"}</div></div>
+    </div>`;    return `<div class="trade-item" onclick="showTradeDetail('${t.id}')">
       <div class="row1">
         <span><span class="symbol">${t.symbol || '?'}</span>
           <span class="exchange-badge" style="margin-left:4px">${t.exchange || ''}</span>${pendingBadge}
@@ -1296,6 +1331,7 @@ function renderTradeList() {
           <span class="grade-badge grade-${grade}" style="margin-left:6px">${grade}</span>
         </span>
       </div>
+      ${metricsHtml}
       <div class="row2">
         <span>${t.closeDate || t.openDate || ''} · ${t.product || ''}</span>
         <span class="pnl ${t.pnl >= 0 ? 'profit' : 'loss'}">${formatPnl(t.pnl)}</span>
@@ -1450,6 +1486,13 @@ function openEditTrade(id) {
   setCheckboxGroup('emotions-grid', t.emotions || []);
   setCheckboxGroup('errors-grid', t.errors || []);
   
+    document.getElementById("t-form-leverage").value = t.leverage || "";
+  document.getElementById("t-form-pnl-pct").value = t.pnlPercent || "";
+  document.getElementById("t-form-rrr").value = t.riskRewardRatio || "";
+  document.getElementById("t-form-hold").value = t.holdDuration || "";
+  document.getElementById("t-form-pos-size").value = t.positionSize || "";
+  document.getElementById("t-form-margin-amt").value = t.marginAmt || "";
+  document.getElementById("t-form-grade").value = t.grade || "";
   uploadedImageData = t.imageData || null;
   renderImagePreview();
   
@@ -1463,8 +1506,9 @@ function closeTradeModal() {
 }
 
 function clearTradeForm() {
-  ['t-form-symbol','t-form-entry','t-form-exit','t-form-qty','t-form-pnl','t-form-notes'].forEach(id => document.getElementById(id).value = '');
+  ['t-form-symbol','t-form-entry','t-form-exit','t-form-qty','t-form-pnl','t-form-notes','t-form-leverage','t-form-pnl-pct','t-form-rrr','t-form-hold','t-form-pos-size','t-form-margin-amt'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('t-form-direction').value = 'Long';
+  document.getElementById('t-form-grade').value = '';
   document.getElementById('t-form-exchange').value = 'Binance';
   document.getElementById('t-form-product').value = '永续合约';
   const now = new Date();
@@ -1542,7 +1586,14 @@ function saveTrade() {
     exitPrice: parseFloat(document.getElementById('t-form-exit').value) || 0,
     qty: parseFloat(document.getElementById('t-form-qty').value) || 0,
     pnl: pnl,
-    exchange: document.getElementById('t-form-exchange').value,
+
+    leverage: parseFloat(document.getElementById("t-form-leverage").value) || 0,
+    pnlPercent: parseFloat(document.getElementById("t-form-pnl-pct").value) || 0,
+    riskRewardRatio: parseFloat(document.getElementById("t-form-rrr").value) || 0,
+    holdDuration: document.getElementById("t-form-hold").value.trim(),
+    positionSize: parseFloat(document.getElementById("t-form-pos-size").value) || 0,
+    marginAmt: parseFloat(document.getElementById("t-form-margin-amt").value) || 0,
+    grade: document.getElementById("t-form-grade").value || "",    exchange: document.getElementById('t-form-exchange').value,
     product: document.getElementById('t-form-product').value,
     openDate: document.getElementById('t-form-open-date').value || '',
     closeDate: document.getElementById('t-form-close-date').value || '',
@@ -1710,6 +1761,7 @@ function closeImageLightbox() {
 
 // ===== Grade Computation =====
 function computeGrade(trade) {
+  if (trade.grade) return trade.grade;
   if (!trade || trade.pnl === undefined || trade.pnl === null) return 'D';
   const pnl = trade.pnl;
   const hasErrors = trade.errors && trade.errors.length > 0;
@@ -2485,6 +2537,33 @@ function showDebug(div, text, type) {
 }
 
 // ===== Data Export/Import =====
+
+// ===== Data Persistence (Browser Storage) =====
+function saveToBrowser() {
+  try {
+    var count = trades.length;
+    localStorage.setItem("tradelens_backup_latest", JSON.stringify(trades));
+    localStorage.setItem("tradelens_backup_" + new Date().toISOString().slice(0, 10), JSON.stringify(trades));
+    saveState();
+    showToast("数据已保存到浏览器 (" + count + " 条交易)", "success");
+  } catch(e) { showToast("保存失败: " + e.message, "error"); }
+}
+
+function syncFromBrowser() {
+  if (trades.length > 0) {
+    if (!confirm("当前有 " + trades.length + " 条交易。从浏览器同步将覆盖当前数据，确定继续？")) return;
+  }
+  try {
+    var saved = localStorage.getItem("tradelens_backup_latest");
+    if (!saved) { showToast("浏览器中未找到备份数据", "info"); return; }
+    var parsed = JSON.parse(saved);
+    if (Array.isArray(parsed)) {
+      trades = parsed;
+      saveState(); renderDashboard(); renderTradeList(); renderCalendar(); populateFilterSymbols(); updateCounts();
+      showToast("已从浏览器同步 " + trades.length + " 条交易", "success");
+    } else { showToast("备份数据格式无效", "error"); }
+  } catch(e) { showToast("同步失败: " + e.message, "error"); }
+}
 function exportData() {
   const data = JSON.stringify(trades, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
