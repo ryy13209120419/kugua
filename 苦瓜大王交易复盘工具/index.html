@@ -8,6 +8,15 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <title>苦瓜大王交易复盘工具 | TradeLens Pro</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GHWPXZGM43"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GHWPXZGM43');
+</script>
 <style>
 /* ===== CSS Reset & Variables ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -23,6 +32,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .nav-item svg{width:26px;height:26px;fill:currentColor;transition:fill .2s}
 .nav-item.active{color:var(--nav-active)}
 .nav-item span{white-space:nowrap;font-weight:500}
+
+/* ===== Collapsible ===== */
+.collapsible-header{cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.collapsible-header:hover{opacity:.8}
+.collapsible-header .arrow{transition:transform .3s ease;font-size:14px;color:var(--text3)}
+.collapsible-header.open .arrow{transform:rotate(180deg)}
+.collapsible-body{overflow:hidden;max-height:0;transition:max-height .5s ease,opacity .3s ease;opacity:0}
+.collapsible-body.open{max-height:2000px;opacity:1}
+
 /* ===== Cards ===== */
 .card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--border);box-shadow:0 2px 8px var(--shadow)}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
@@ -372,6 +390,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
           <div class="form-group"><label class="form-label">盈亏 (USD)</label><input class="form-input" id="t-form-pnl" type="number" step="any" placeholder="0.00"></div>
         </div>
         <div class="form-row">
+          <div class="form-group"><label class="form-label">杠杆倍数</label><input class="form-input" id="t-form-leverage" type="number" step="any" placeholder="1.0"></div>
+          <div class="form-group"><label class="form-label">盈亏 (%)</label><input class="form-input" id="t-form-pnl-pct" type="number" step="any" placeholder="0.00"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">本单盈亏比</label><input class="form-input" id="t-form-rrr" type="number" step="any" placeholder="例如 2.5"></div>
+          <div class="form-group"><label class="form-label">持仓时间</label><input class="form-input" id="t-form-hold" type="text" placeholder="例如 2h30m / 3天"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">持仓数量</label><input class="form-input" id="t-form-pos-size" type="number" step="any" placeholder="例如 1000"></div>
+          <div class="form-group"><label class="form-label">保证金 (USD)</label><input class="form-input" id="t-form-margin-amt" type="number" step="any" placeholder="例如 500"></div>
+        </div>
+        <div class="form-row">
           <div class="form-group"><label class="form-label">交易所</label><select class="form-select" id="t-form-exchange"><option value="Binance">Binance</option><option value="OKX">OKX</option><option value="Other">其他</option></select></div>
           <div class="form-group"><label class="form-label">产品类型</label><select class="form-select" id="t-form-product"><option value="永续合约">永续合约</option><option value="交割合约">交割合约</option><option value="现货">现货</option><option value="期权">期权</option></select></div>
         </div>
@@ -460,6 +490,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
           <input type="file" id="t-form-image" accept="image/*" style="width:100%;padding:8px;background:var(--input-bg);border-radius:6px;border:1px solid var(--border);color:var(--text);font-size:13px">
           <div class="image-preview-container" id="image-preview-container"></div>
         </div>
+        <div class="form-group"><label class="form-label">🏆 手动评分（留空则自动计算）</label>
+          <select class="form-select" id="t-form-grade">
+            <option value="">自动计算</option>
+            <option value="A">A - 优秀</option>
+            <option value="B">B - 良好</option>
+            <option value="C">C - 一般</option>
+            <option value="D">D - 差</option>
+          </select></div>
         
         <div style="display:flex;gap:8px;margin-top:16px">
           <button class="btn btn-primary" onclick="saveTrade()" style="flex:1">💾 保存</button>
@@ -487,7 +525,105 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <button class="btn btn-sm btn-secondary" onclick="showPage('dashboard')">← 返回</button>
     </div>
 
-    <!-- Theme & Currency -->
+        <!-- ⭐ 赞助与关于 (折叠) -->
+    <div class="card" id="support-collapsible">
+      <div class="card-header collapsible-header" onclick="toggleSupportCard()" id="support-toggle">
+        <span class="card-title">⭐ 赞助与关于</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="collapsible-body" id="support-body">
+        <div class="card" style="background:linear-gradient(135deg,var(--card),var(--bg2));border:1px solid var(--accent);text-align:center;padding:24px;margin:0 0 12px 0;border-radius:12px">
+          <div style="font-size:36px;margin-bottom:12px">🥒</div>
+          <h2 style="font-size:20px;margin-bottom:8px;color:var(--accent);margin-top:0">苦瓜大王交易复盘</h2>
+          <p style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:12px">如果这个工具帮你提高了交易水平，欢迎赞助支持！<br>你的支持是我持续改进的动力 ❤️</p>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:10px">📖 功能介绍</div>
+          <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px"><strong>🥒 苦瓜大王交易复盘工具</strong> 是一款面向加密货币交易者的纯前端复盘分析平台，帮助你系统化地回顾每一笔交易，不断优化交易策略。</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">📊</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">交易仪表盘</div>
+              <div style="font-size:9px;color:var(--text3)">盈亏总览 · A-D评级</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">📋</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">交易记录</div>
+              <div style="font-size:9px;color:var(--text3)">记账 · 信号 · 情绪</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">📅</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">日历视图</div>
+              <div style="font-size:9px;color:var(--text3)">盈亏日历 · 按日查看</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">🧠</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">AI 智能分析</div>
+              <div style="font-size:9px;color:var(--text3)">截图分析 · 市场解读</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">⚡</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">实时行情</div>
+              <div style="font-size:9px;color:var(--text3)">币安 · 恐惧贪婪</div>
+            </div>
+            <div style="background:var(--bg3);padding:8px;border-radius:6px;text-align:center">
+              <div style="font-size:16px;margin-bottom:2px">🔒</div>
+              <div style="font-size:10px;font-weight:600;color:var(--text)">隐私安全</div>
+              <div style="font-size:9px;color:var(--text3)">本地存储 · 零上传</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:6px;font-size:10px;text-align:center;color:var(--text3)">✅ 纯静态 PWA · 无需服务器 · 支持 GitHub Pages · 可添加到主屏幕离线使用</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;text-align:center">
+          <div style="font-size:13px;font-weight:600;margin-bottom:10px">💖 赞助支持</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="background:var(--bg3);border-radius:10px;padding:10px">
+              <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#1677ff">支付宝收款码</div>
+              <img src="alipay_qr.jpg" alt="支付宝收款码" style="width:100%;max-width:220px;border-radius:8px;border:1px solid var(--border)">
+            </div>
+            <div style="background:var(--bg3);border-radius:10px;padding:10px">
+              <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#07c160">微信收款码</div>
+              <img src="wechat_qr.jpg" alt="微信收款码" style="width:100%;max-width:220px;border-radius:8px;border:1px solid var(--border)">
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:10px">打开支付宝或微信扫一扫即可赞助支持</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">💬 联系方式</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#12b7f5,#0a8fdb);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;color:var(--text)">QQ交流群 / 联系作者</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">问题反馈 · 功能建议 · 交易交流</div>
+              <div style="font-size:14px;font-weight:700;color:var(--accent);margin-top:4px;background:var(--bg3);padding:4px 10px;border-radius:4px;display:inline-block">3064376057</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">QQ号，长按复制后添加好友</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:6px">💡 功能建议</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6">有任何功能建议、bug 反馈或合作意向，欢迎通过 QQ 联系。</div>
+          <div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:6px;font-size:11px">
+            <strong>📌 可选反馈内容：</strong><br>• 想要的新功能或改进<br>• 使用中遇到的问题<br>• 希望接入的新交易所<br>• 自定义分析框架支持
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:6px">🌐 关于此站点</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6">
+            <p><strong>TradeLens Pro</strong> 纯静态 PWA 应用<br>数据存储在浏览器本地，不经过任何服务器。</p>
+            <div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:6px;font-size:11px;text-align:center">
+              <span style="color:var(--accent)">✅ 无需服务器 · 完全免费 · 隐私安全</span><br>
+              <span style="color:var(--text3)">所有数据仅保存在你的浏览器中</span>
+            </div>
+            <div style="margin-top:8px;text-align:center;font-size:10px;color:var(--text3)">版本 3.1-GH · 适配 GitHub Pages 部署</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme & Currency --><!-- Theme & Currency -->
     <div class="card">
       <div class="card-header"><span class="card-title">🎨 外观与货币</span></div>
       <div class="settings-row">
@@ -514,6 +650,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="settings-row">
         <div><div class="label">📤 导入数据 (JSON)</div></div>
         <input type="file" id="import-json" accept=".json" style="font-size:12px" onchange="importData(event)">
+      </div>
+      <div class="settings-row">
+        <div><div class="label">💾 保存到浏览器</div><div class="desc">一键保存数据</div></div>
+        <button class="btn btn-sm btn-primary" onclick="saveToBrowser()">保存</button>
+      </div>
+      <div class="settings-row">
+        <div><div class="label">🔄 同步以往数据</div><div class="desc">从浏览器恢复数据</div></div>
+        <button class="btn btn-sm btn-accent" onclick="syncFromBrowser()">同步</button>
       </div>
       <div class="settings-row">
         <div><div class="label">🗑️ 清除所有数据</div></div>
@@ -678,11 +822,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       </div>
     </div>
   </div>
-    <div class="card-header"><span class="card-title">📱 支付宝打赏</span></div>
-    <div style="text-align:center;padding:12px 0">
-      <div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:2px;background:var(--bg2);padding:10px 20px;border-radius:8px;display:inline-block">13209120419</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:10px">长按复制手机号 → 打开支付宝转账</div>
+    <div class="card-header"><span class="card-title">💖 打赏支持</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="text-align:center;background:var(--bg2);border-radius:10px;padding:12px;border:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#1677ff">支付宝收款码</div>
+        <img src="alipay_qr.jpg" alt="支付宝收款码" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border)">
+      </div>
+      <div style="text-align:center;background:var(--bg2);border-radius:10px;padding:12px;border:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#07c160">微信收款码</div>
+        <img src="wechat_qr.jpg" alt="微信收款码" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border)">
+      </div>
     </div>
+    <div style="font-size:12px;color:var(--text3);margin-top:10px;text-align:center">打开支付宝或微信扫一扫即可赞助支持</div>
   </div>
   <div class="card">
     <div class="card-header"><span class="card-title">💬 联系方式</span></div>
@@ -745,10 +896,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
     <span>设置</span>
   </button>
-  <button class="nav-item" onclick="showPage('support')">
-    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-    <span>赞助</span>
-  </button>
+  
 </nav>
 
 <!-- ===== Toast Container ===== -->
@@ -991,6 +1139,14 @@ function formatPnl(pnl) {
 }
 
 // ===== Dashboard =====
+
+// ===== Toggle Support Card =====
+function toggleSupportCard() {
+  var body = document.getElementById('support-body');
+  var toggle = document.getElementById('support-toggle');
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
 function renderDashboard() {
   const count = trades.length;
   document.getElementById('dash-trade-count').textContent = count;
@@ -1158,7 +1314,14 @@ function renderTradeList() {
   container.innerHTML = sorted.map(t => {
     const grade = computeGrade(t);
     const pendingBadge = t.reviewStatus === 'pending' ? '<span style="font-size:9px;padding:1px 5px;background:var(--orange-badge);color:#fff;border-radius:6px;margin-left:4px">待复盘</span>' : '';
-    return `<div class="trade-item" onclick="showTradeDetail('${t.id}')">
+    const metricsHtml = `<div style="display:flex;flex-wrap:wrap;gap:2px;margin:6px 0 4px 0;padding:4px 8px;background:var(--bg3);border-radius:6px;justify-content:space-around">
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">持仓</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.positionSize || "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">保证金</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.marginAmt || "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">杠杆</div><div style="font-size:13px;font-weight:600;color:var(--accent);white-space:nowrap">${t.leverage ? t.leverage + "x" : "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">盈亏%</div><div style="font-size:13px;font-weight:600;white-space:nowrap;color:${t.pnlPercent > 0 ? "var(--profit)" : "var(--loss)"}">${t.pnlPercent ? (t.pnlPercent > 0 ? "+" : "") + t.pnlPercent + "%" : "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">盈亏比</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.riskRewardRatio || "-"}</div></div>
+      <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">持仓时间</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.holdDuration || "-"}</div></div>
+    </div>`;    return `<div class="trade-item" onclick="showTradeDetail('${t.id}')">
       <div class="row1">
         <span><span class="symbol">${t.symbol || '?'}</span>
           <span class="exchange-badge" style="margin-left:4px">${t.exchange || ''}</span>${pendingBadge}
@@ -1168,6 +1331,7 @@ function renderTradeList() {
           <span class="grade-badge grade-${grade}" style="margin-left:6px">${grade}</span>
         </span>
       </div>
+      ${metricsHtml}
       <div class="row2">
         <span>${t.closeDate || t.openDate || ''} · ${t.product || ''}</span>
         <span class="pnl ${t.pnl >= 0 ? 'profit' : 'loss'}">${formatPnl(t.pnl)}</span>
@@ -1322,6 +1486,13 @@ function openEditTrade(id) {
   setCheckboxGroup('emotions-grid', t.emotions || []);
   setCheckboxGroup('errors-grid', t.errors || []);
   
+    document.getElementById("t-form-leverage").value = t.leverage || "";
+  document.getElementById("t-form-pnl-pct").value = t.pnlPercent || "";
+  document.getElementById("t-form-rrr").value = t.riskRewardRatio || "";
+  document.getElementById("t-form-hold").value = t.holdDuration || "";
+  document.getElementById("t-form-pos-size").value = t.positionSize || "";
+  document.getElementById("t-form-margin-amt").value = t.marginAmt || "";
+  document.getElementById("t-form-grade").value = t.grade || "";
   uploadedImageData = t.imageData || null;
   renderImagePreview();
   
@@ -1335,8 +1506,9 @@ function closeTradeModal() {
 }
 
 function clearTradeForm() {
-  ['t-form-symbol','t-form-entry','t-form-exit','t-form-qty','t-form-pnl','t-form-notes'].forEach(id => document.getElementById(id).value = '');
+  ['t-form-symbol','t-form-entry','t-form-exit','t-form-qty','t-form-pnl','t-form-notes','t-form-leverage','t-form-pnl-pct','t-form-rrr','t-form-hold','t-form-pos-size','t-form-margin-amt'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('t-form-direction').value = 'Long';
+  document.getElementById('t-form-grade').value = '';
   document.getElementById('t-form-exchange').value = 'Binance';
   document.getElementById('t-form-product').value = '永续合约';
   const now = new Date();
@@ -1414,7 +1586,14 @@ function saveTrade() {
     exitPrice: parseFloat(document.getElementById('t-form-exit').value) || 0,
     qty: parseFloat(document.getElementById('t-form-qty').value) || 0,
     pnl: pnl,
-    exchange: document.getElementById('t-form-exchange').value,
+
+    leverage: parseFloat(document.getElementById("t-form-leverage").value) || 0,
+    pnlPercent: parseFloat(document.getElementById("t-form-pnl-pct").value) || 0,
+    riskRewardRatio: parseFloat(document.getElementById("t-form-rrr").value) || 0,
+    holdDuration: document.getElementById("t-form-hold").value.trim(),
+    positionSize: parseFloat(document.getElementById("t-form-pos-size").value) || 0,
+    marginAmt: parseFloat(document.getElementById("t-form-margin-amt").value) || 0,
+    grade: document.getElementById("t-form-grade").value || "",    exchange: document.getElementById('t-form-exchange').value,
     product: document.getElementById('t-form-product').value,
     openDate: document.getElementById('t-form-open-date').value || '',
     closeDate: document.getElementById('t-form-close-date').value || '',
@@ -1582,6 +1761,7 @@ function closeImageLightbox() {
 
 // ===== Grade Computation =====
 function computeGrade(trade) {
+  if (trade.grade) return trade.grade;
   if (!trade || trade.pnl === undefined || trade.pnl === null) return 'D';
   const pnl = trade.pnl;
   const hasErrors = trade.errors && trade.errors.length > 0;
@@ -2357,6 +2537,33 @@ function showDebug(div, text, type) {
 }
 
 // ===== Data Export/Import =====
+
+// ===== Data Persistence (Browser Storage) =====
+function saveToBrowser() {
+  try {
+    var count = trades.length;
+    localStorage.setItem("tradelens_backup_latest", JSON.stringify(trades));
+    localStorage.setItem("tradelens_backup_" + new Date().toISOString().slice(0, 10), JSON.stringify(trades));
+    saveState();
+    showToast("数据已保存到浏览器 (" + count + " 条交易)", "success");
+  } catch(e) { showToast("保存失败: " + e.message, "error"); }
+}
+
+function syncFromBrowser() {
+  if (trades.length > 0) {
+    if (!confirm("当前有 " + trades.length + " 条交易。从浏览器同步将覆盖当前数据，确定继续？")) return;
+  }
+  try {
+    var saved = localStorage.getItem("tradelens_backup_latest");
+    if (!saved) { showToast("浏览器中未找到备份数据", "info"); return; }
+    var parsed = JSON.parse(saved);
+    if (Array.isArray(parsed)) {
+      trades = parsed;
+      saveState(); renderDashboard(); renderTradeList(); renderCalendar(); populateFilterSymbols(); updateCounts();
+      showToast("已从浏览器同步 " + trades.length + " 条交易", "success");
+    } else { showToast("备份数据格式无效", "error"); }
+  } catch(e) { showToast("同步失败: " + e.message, "error"); }
+}
 function exportData() {
   const data = JSON.stringify(trades, null, 2);
   const blob = new Blob([data], { type: 'application/json' });

@@ -1,0 +1,13 @@
+﻿<!DOCTYPE html>
+<html><meta charset="UTF-8"><body>
+<h1>JavaScript Test</h1>
+<script>
+document.title = 'JS WORKING: ' + (typeof init === 'function');
+try {
+    init();
+    document.body.innerHTML += '<p>init() called successfully</p>';
+} catch(e) {
+    document.body.innerHTML += '<p>Error: ' + e.message + '</p>';
+}
+</script>
+</body></html>
