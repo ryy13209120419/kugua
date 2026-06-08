@@ -1512,6 +1512,14 @@ function openEditTrade(id) {
   document.getElementById('t-form-close-date').value = t.closeDate ? t.closeDate.slice(0, 16) : '';
   document.getElementById('t-form-notes').value = t.notes || '';
   
+  document.getElementById("t-form-leverage").value = t.leverage || "";
+  document.getElementById("t-form-pnl-pct").value = t.pnlPercent || "";
+  document.getElementById("t-form-rrr").value = t.riskRewardRatio || "";
+  document.getElementById("t-form-hold").value = t.holdDuration || "";
+  document.getElementById("t-form-pos-size").value = t.positionSize || "";
+  document.getElementById("t-form-margin-amt").value = t.marginAmt || "";
+  document.getElementById("t-form-grade").value = t.grade || "";
+  // Load images  
   // Set checkboxes
   setCheckboxGroup('signals-grid', t.signals || []);
   setCheckboxGroup('emotions-grid', t.emotions || []);
@@ -1530,8 +1538,9 @@ function closeTradeModal() {
 }
 
 function clearTradeForm() {
-  ['t-form-symbol','t-form-entry','t-form-exit','t-form-qty','t-form-pnl','t-form-notes'].forEach(id => document.getElementById(id).value = '');
+  ['t-form-symbol','t-form-entry','t-form-exit','t-form-qty','t-form-pnl','t-form-notes','t-form-leverage','t-form-pnl-pct','t-form-rrr','t-form-hold','t-form-pos-size','t-form-margin-amt'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('t-form-direction').value = 'Long';
+  document.getElementById('t-form-grade').value = '';
   document.getElementById('t-form-exchange').value = 'Binance';
   document.getElementById('t-form-product').value = '永续合约';
   const now = new Date();
@@ -1542,7 +1551,7 @@ function clearTradeForm() {
   document.querySelectorAll('#signals-grid input, #emotions-grid input, #errors-grid input').forEach(cb => cb.checked = false);
   document.querySelectorAll('.checkbox-item').forEach(item => item.classList.remove('active'));
   
-  uploadedImagesData = [];
+  uploadedImagesData = [,'t-form-leverage','t-form-pnl-pct','t-form-rrr','t-form-hold','t-form-pos-size','t-form-margin-amt'];
   document.getElementById('image-preview-container').innerHTML = '';
   document.getElementById('t-form-image').value = '';
 }
@@ -1613,7 +1622,14 @@ function saveTrade() {
     product: document.getElementById('t-form-product').value,
     openDate: document.getElementById('t-form-open-date').value || '',
     closeDate: document.getElementById('t-form-close-date').value || '',
-    notes: document.getElementById('t-form-notes').value.trim(),
+        leverage: parseFloat(document.getElementById("t-form-leverage").value) || 0,
+    pnlPercent: parseFloat(document.getElementById("t-form-pnl-pct").value) || 0,
+    riskRewardRatio: parseFloat(document.getElementById("t-form-rrr").value) || 0,
+    holdDuration: document.getElementById("t-form-hold").value.trim(),
+    positionSize: parseFloat(document.getElementById("t-form-pos-size").value) || 0,
+    marginAmt: parseFloat(document.getElementById("t-form-margin-amt").value) || 0,
+    grade: document.getElementById("t-form-grade").value || "",
+notes: document.getElementById('t-form-notes').value.trim(),
     signals: signals,
     emotions: emotions,
     errors: errors,
