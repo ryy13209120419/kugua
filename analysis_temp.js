@@ -47,9 +47,13 @@ function renderMarketSources(data) {
   if (!div) return;
   var time = new Date().toLocaleString("zh-CN");
   var srcs = data.sources.length > 0 ? data.sources.join(" | ") : "(离线)";
-  div.innerHTML = "<span style=\"color:var(--accent)\">" + time + "</span> 数据源: " + srcs;
+  var marketLabel = '';
+  try { if (typeof selectedMarket !== 'undefined' && selectedMarket) {
+    var mktNames = { 'crypto': '加密货币', 'us_stocks': '美股', 'gold': '黄金', 'futures': '期货' };
+    marketLabel = ' | 聚焦: <strong>' + (mktNames[selectedMarket] || selectedMarket) + '</strong>';
+  } } catch(e) {}
+  div.innerHTML = "<span style=\"color:var(--accent)\">" + time + "</span> 数据源: " + srcs + marketLabel;
 }
-
 function fmtNum(n) {
   if (!n) return "0";
   if (n >= 1e12) return (n/1e12).toFixed(2)+"T";
@@ -90,14 +94,14 @@ async function runMarketAIAnalysis(data) {
   var ak = null;
   try { ak = settings.aiApiKey; } catch(e) {}
   if (!ak) return null;
+  var marketFocus = '';
+  try { if (typeof selectedMarket !== 'undefined' && selectedMarket) {
+    var mktNames = { 'crypto': '加密货币', 'us_stocks': '美股', 'gold': '黄金', 'futures': '期货' };
+    marketFocus = '当前分析聚焦于: ' + (mktNames[selectedMarket] || selectedMarket) + '\n请专注分析该市场的数据、走势、机会与风险。\n\n';
+  } } catch(e) {}
   var prompt = "你是一位专业的金融市场分析师。请基于以下实时市场数据，生成一份完整的市场分析报告。\n\n## 市场数据\n\n";
-  if (data.fearGreed) prompt += "- F&G: " + data.fearGreed.value + "/100\n";
-  if (data.binance) {
-    prompt += "\n主流币24h:\n";
-    for (var bi2 = 0; bi2 < data.binance.length; bi2++) { var t2 = data.binance[bi2]; prompt += "- " + t2.symbol + ": $" + parseFloat(t2.lastPrice).toFixed(5) + " (" + parseFloat(t2.priceChangePercent).toFixed(2) + "%)\n"; }
-  }
-  prompt += "\n请按以下五个板块输出分析（使用中文，每个板块保留emoji标题）：\n\n📊 大盘概况\n\n📈 走势预测\n\n⚡ 异动监测\n\n🎯 机会提示\n\n📋 具体点位与建议\n\n要求：内容简洁具体，关键数据加粗，给出明确的支撑/阻力位数值。";
-  try { var respText = await callAiApi([{ role: "system", content: "你是一位专业的金融市场分析师" }, { role: "user", content: prompt }]); if (respText) return respText; } catch(e) {}
+  prompt += marketFocus;prompt += "\n请按以下五个板块输出分析（使用中文，每个板块保留emoji标题）：\n\n📊 大盘概况\n\n📈 走势预测\n\n⚡ 异动监测\n\n🎯 机会提示\n\n📋 具体点位与建议\n\n要求：内容简洁具体，关键数据加粗，给出明确的支撑/阻力位数值。";
+  try { var respText = await callAiApi([{ role: "system", content: "你是一位专业的金融市场分析师" + (marketFocus ? " 聚焦分析: " + marketFocus.replace("\n"," ") : "") }, { role: "user", content: prompt }]); if (respText) return respText; } catch(e) {}
   return null;
 }
 

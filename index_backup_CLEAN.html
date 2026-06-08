@@ -129,8 +129,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .modal-header h3{font-size:18px}
 .modal-close{background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;padding:4px}
 /* ===== Toast ===== */
-.toast-container{position:fixed;top:12px;left:12px;right:12px;z-index:3000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
-.toast{padding:12px 20px;border-radius:var(--radius-sm);font-size:14px;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.3);animation:slideIn .3s ease;max-width:360px;pointer-events:auto;text-align:center}
+.toast-container{position:fixed;top:16px;right:16px;z-index:3000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:var(--radius-sm);font-size:14px;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.3);animation:slideIn .3s ease;max-width:360px}
 .toast.success{background:var(--accent)}.toast.error{background:var(--profit)}.toast.info{background:var(--bg3)}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 /* ===== Page Header ===== */
@@ -168,10 +168,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .analysis-framework-item input{display:none}
 .analysis-framework-item.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,var(--bg2))}
 .analysis-framework-item .fw-icon{font-size:18px}
-.market-selector-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 4px 0}
-.market-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg2);color:var(--text2);font-size:13px;cursor:pointer;transition:all .2s;font-weight:500}
-.market-btn:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--bg2))}
-.market-btn.active{background:color-mix(in srgb,var(--accent) 25%,var(--bg2));border-color:var(--accent);color:var(--accent);font-weight:600}
 .analysis-result-card{background:var(--card2);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;border:1px solid var(--border)}
 .analysis-result-card .result-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
 .analysis-result-card .result-value{font-size:14px;font-weight:500;line-height:1.6}
@@ -181,10 +177,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .analysis-result-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin:2px}
 .analysis-result-tag.ict{background:color-mix(in srgb,#7c4dff 20%,transparent);color:#b388ff;border:1px solid #7c4dff}
 .analysis-result-tag.pa{background:color-mix(in srgb,#00bcd4 20%,transparent);color:#4dd0e1;border:1px solid #00bcd4}
-.analysis-result-tag.candle{background:color-mix(in srgb,#ff6f00 20%,transparent);color:#ffb74d;border:1px solid #ff6f00}
-.analysis-result-tag.chan{background:color-mix(in srgb,#e91e63 20%,transparent);color:#f48fb1;border:1px solid #e91e63}
-.analysis-result-tag.dow{background:color-mix(in srgb,#7c4dff 20%,transparent);color:#b388ff;border:1px solid #7c4dff}
-.analysis-result-tag.elliott{background:color-mix(in srgb,#00bcd4 20%,transparent);color:#4dd0e1;border:1px solid #00bcd4}
+.analysis-result-tag.smc{background:color-mix(in srgb,#ff6f00 20%,transparent);color:#ffb74d;border:1px solid #ff6f00}
+.analysis-result-tag.harmonic{background:color-mix(in srgb,#e91e63 20%,transparent);color:#f48fb1;border:1px solid #e91e63}
 .analysis-history-item{padding:12px;background:var(--bg2);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s}
 .analysis-history-item:hover{border-color:var(--accent)}
 .analysis-history-item .h-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -282,18 +276,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
 
     <!-- ===== Market Data Sources ===== -->
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:13px;font-weight:600;color:var(--text2)">🔍 市场筛选</span>
-        <span id="ai-sources" style="font-size:11px;color:var(--text3)"></span>
-      </div>
-      <div class="market-selector-grid">
-        <div class="market-btn" onclick="selectMarket('crypto',this)" data-market="crypto">💰 加密货币</div>
-        <div class="market-btn" onclick="selectMarket('us_stocks',this)" data-market="us_stocks">🇺🇸 美股</div>
-        <div class="market-btn" onclick="selectMarket('gold',this)" data-market="gold">🥇 黄金</div>
-        <div class="market-btn" onclick="selectMarket('futures',this)" data-market="futures">📈 期货</div>
-      </div>
-    </div>
+    <div class="card"><div id="ai-sources" style="font-size:12px;color:var(--text3)">💡 点击「刷新分析」获取实时数据</div></div>
 
     <div class="card">
       <div class="card-header"><span class="card-title">📊 大盘概况</span><span id="ai-time" style="font-size:11px;color:var(--text3)"></span></div>
@@ -362,17 +345,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <label class="analysis-framework-item active" data-fw="pa">
           <input type="checkbox" checked><span class="fw-icon">📊</span> 价格行为学
         </label>
-        <label class="analysis-framework-item active" data-fw="candle">
-          <input type="checkbox" checked><span class="fw-icon">🕯️</span> 日本蜡烛图技术
+        <label class="analysis-framework-item" data-fw="smc">
+          <input type="checkbox"><span class="fw-icon">🔄</span> SMC
         </label>
-        <label class="analysis-framework-item" data-fw="chan">
-          <input type="checkbox"><span class="fw-icon">☯️</span> 缠论
-        </label>
-        <label class="analysis-framework-item" data-fw="dow">
-          <input type="checkbox"><span class="fw-icon">📈</span> 道氏理论
-        </label>
-        <label class="analysis-framework-item" data-fw="elliott">
-          <input type="checkbox"><span class="fw-icon">🌊</span> 波浪理论
+        <label class="analysis-framework-item" data-fw="harmonic">
+          <input type="checkbox"><span class="fw-icon">🎯</span> 谐波形态
         </label>
       </div>
     </div>
@@ -390,23 +367,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="card-header"><span class="card-title">📋 历史分析记录</span></div>
       <div id="analysis-history"></div>
     </div>
-    <!-- Local Analysis -->
-    <div class="card">
-      <div class="card-header"><span class="card-title">🧠 本地深度分析</span></div>
-      <div class="form-group">
-        <label class="form-label">选择最近交易数量</label>
-        <select class="form-select" id="local-analysis-count">
-          <option value="5">最近 5 笔</option>
-          <option value="10" selected>最近 10 笔</option>
-          <option value="20">最近 20 笔</option>
-          <option value="0">全部交易</option>
-        </select>
-      </div>
-      <button class="btn btn-accent" onclick="runLocalAnalysis()">🔍 运行分析</button>
-      <div id="local-analysis-output" class="ai-output" style="display:none"></div>
-    </div>
-
-
   </div>
 
   <!-- ===== NEW/EDIT TRADE PAGE (Modal) ===== -->
@@ -437,43 +397,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
           <div class="form-group"><label class="form-label">开仓时间</label><input class="form-input" id="t-form-open-date" type="datetime-local"></div>
           <div class="form-group"><label class="form-label">平仓时间</label><input class="form-input" id="t-form-close-date" type="datetime-local"></div>
         </div>
-        <div class="form-group">        <div class="form-group">
-          <label class="form-label">杠杆倍数</label>
-          <input class="form-input" id="t-form-leverage" type="number" step="any" placeholder="1.0">
-        </div>
-        <div class="form-group">
-          <label class="form-label">本单盈亏%</label>
-          <input class="form-input" id="t-form-pnl-pct" type="number" step="any" placeholder="+2.5">
-        </div>
-        <div class="form-group">
-          <label class="form-label">本单盈亏比</label>
-          <input class="form-input" id="t-form-rrr" type="number" step="any" placeholder="3.0">
-        </div>
-        <div class="form-group">
-          <label class="form-label">持仓时间</label>
-          <input class="form-input" id="t-form-hold" type="text" placeholder="2h30m">
-        </div>
-        <div class="form-group" style="display:flex;gap:8px">
-          <div style="flex:1">
-            <label class="form-label">持仓数量</label>
-            <input class="form-input" id="t-form-pos-size" type="number" step="any" placeholder="20">
-          </div>
-          <div style="flex:1">
-            <label class="form-label">保证金 (USD)</label>
-            <input class="form-input" id="t-form-margin-amt" type="number" step="any" placeholder="500">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">手动评分（留空则自动计算）</label>
-          <select class="form-select" id="t-form-grade">
-            <option value="">自动</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-          </select>
-        </div>
-<label class="form-label">备注</label><textarea class="form-textarea" id="t-form-notes" placeholder="交易逻辑、复盘思考..."></textarea></div>
+        <div class="form-group"><label class="form-label">备注</label><textarea class="form-textarea" id="t-form-notes" placeholder="交易逻辑、复盘思考..."></textarea></div>
         
         <!-- Signals -->
         <div class="form-group">
@@ -551,7 +475,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <!-- Image Upload -->
         <div class="form-group">
           <label class="form-label">📷 截图上传</label>
-          <input type="file" id="t-form-image" accept="image/*" multiple style="width:100%;padding:8px;background:var(--input-bg);border-radius:6px;border:1px solid var(--border);color:var(--text);font-size:13px">
+          <input type="file" id="t-form-image" accept="image/*" style="width:100%;padding:8px;background:var(--input-bg);border-radius:6px;border:1px solid var(--border);color:var(--text);font-size:13px">
           <div class="image-preview-container" id="image-preview-container"></div>
         </div>
         
@@ -635,15 +559,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <div style="background:var(--bg3);border-radius:10px;padding:10px">
               <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#1677ff">支付宝收款码</div>
-              <img src="alipay_qr.jpg" alt="支付宝收款码" style="width:100%;aspect-ratio:1;object-fit:contain;border-radius:8px;border:1px solid var(--border)">
+              <img src="alipay_qr.jpg" alt="支付宝收款码" style="width:100%;max-width:220px;border-radius:8px;border:1px solid var(--border)">
             </div>
             <div style="background:var(--bg3);border-radius:10px;padding:10px">
               <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#07c160">微信收款码</div>
-              <img src="wechat_qr.jpg" alt="微信收款码" style="width:100%;aspect-ratio:1;object-fit:contain;border-radius:8px;border:1px solid var(--border)">
+              <img src="wechat_qr.jpg" alt="微信收款码" style="width:100%;max-width:220px;border-radius:8px;border:1px solid var(--border)">
             </div>
           </div>
           <div style="font-size:11px;color:var(--text3);margin-top:10px">打开支付宝或微信扫一扫即可赞助支持</div>
-          <div style="font-size:13px;font-weight:600;color:var(--accent);margin-top:10px">🎉 祝打赏的大哥交易顺利，天天出金！</div>
         </div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
           <div style="font-size:13px;font-weight:600;margin-bottom:8px">💬 联系方式</div>
@@ -652,7 +575,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
               <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
             </div>
             <div style="flex:1">
-              <div style="font-size:13px;font-weight:600;color:var(--text)">qq联系苦瓜大王</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text)">QQ交流群 / 联系作者</div>
               <div style="font-size:11px;color:var(--text3);margin-top:2px">问题反馈 · 功能建议 · 交易交流</div>
               <div style="font-size:14px;font-weight:700;color:var(--accent);margin-top:4px;background:var(--bg3);padding:4px 10px;border-radius:4px;display:inline-block">3064376057</div>
               <div style="font-size:10px;color:var(--text3);margin-top:2px">QQ号，长按复制后添加好友</div>
@@ -697,36 +620,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       </div>
     </div>
 
-        <!-- Data Management -->
+    <!-- Data Management -->
     <div class="card">
       <div class="card-header"><span class="card-title">💾 数据管理</span></div>
       <div class="settings-row">
-        <div><div class="label">📥 导出数据 (JSON)</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">保存为本地 JSON 文件</div></div>
+        <div><div class="label">📥 导出数据 (JSON)</div></div>
         <button class="btn btn-sm btn-secondary" onclick="exportData()">导出</button>
       </div>
       <div class="settings-row">
-        <div><div class="label">📤 导入数据 (JSON)</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">选择 JSON 文件导入历史数据</div></div>
-        <label class="btn btn-sm btn-secondary" style="cursor:pointer;flex-shrink:0;margin-left:8px" onclick="document.getElementById('import-json').click()">选择文件</label>
-        <input type="file" id="import-json" accept=".json" style="display:none" onchange="importData(event)">
-      </div>
-      <div class="settings-row">
-        <div><div class="label">💾 保存到浏览器</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">将数据存入浏览器本地存储</div></div>
-        <button class="btn btn-sm btn-secondary" onclick="saveToBrowser()">保存</button>
-      </div>
-      <div class="settings-row">
-        <div><div class="label">🔄 从浏览器同步</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">读取本设备浏览器里的交易数据</div></div>
-        <button class="btn btn-sm btn-accent" onclick="syncFromBrowser()">同步</button>
+        <div><div class="label">📤 导入数据 (JSON)</div></div>
+        <input type="file" id="import-json" accept=".json" style="font-size:12px" onchange="importData(event)">
       </div>
       <div class="settings-row">
         <div><div class="label">🗑️ 清除所有数据</div></div>
         <button class="btn btn-sm btn-danger" onclick="clearAllData()">清除</button>
       </div>
     </div>
-<!-- CSV Import -->
+
+    <!-- CSV Import -->
     <div class="card">
       <div class="card-header"><span class="card-title">📄 CSV 导入</span></div>
       <div class="form-group">
@@ -775,6 +686,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <button class="btn btn-secondary btn-sm" onclick="testAiConnection()">🔗 测试连接</button>
       </div>
       <div id="ai-test-result" style="margin-top:8px;font-size:13px"></div>
+    </div>
+
+              <div style="margin-top:12px;padding:14px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px">🌐 纯静态 PWA — 无需服务器</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6">
+        ✅ 本应用为纯前端静态页面，可部署到 GitHub Pages<br>
+        ✅ 所有数据保存在浏览器本地 (localStorage)<br>
+        ✅ 截图导入 · 手动记账 · 本地分析 · AI分析（自配Key）<br>
+        ✅ 支持 PWA 添加到手机主屏幕离线使用<br>
+        ✅ 无需后端服务，完全免费且隐私安全
+        </div>
+      </div>
+    <!-- Local Analysis -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">🧠 本地深度分析</span></div>
+      <div class="form-group">
+        <label class="form-label">选择最近交易数量</label>
+        <select class="form-select" id="local-analysis-count">
+          <option value="5">最近 5 笔</option>
+          <option value="10" selected>最近 10 笔</option>
+          <option value="20">最近 20 笔</option>
+          <option value="0">全部交易</option>
+        </select>
+      </div>
+      <button class="btn btn-accent" onclick="runLocalAnalysis()">🔍 运行分析</button>
+      <div id="local-analysis-output" class="ai-output" style="display:none"></div>
+    </div>
+
+    <!-- Sample Data -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">📌 示例数据</span></div>
+      <button class="btn btn-secondary btn-sm" onclick="loadSampleData()">加载示例交易数据</button>
     </div>
 
     <!-- About -->
@@ -855,11 +798,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div style="text-align:center;background:var(--bg2);border-radius:10px;padding:12px;border:1px solid var(--border)">
         <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#1677ff">支付宝收款码</div>
-        <img src="alipay_qr.jpg" alt="支付宝收款码" style="width:100%;aspect-ratio:1;object-fit:contain;border-radius:8px;border:1px solid var(--border)">
+        <img src="alipay_qr.jpg" alt="支付宝收款码" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border)">
       </div>
       <div style="text-align:center;background:var(--bg2);border-radius:10px;padding:12px;border:1px solid var(--border)">
         <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#07c160">微信收款码</div>
-        <img src="wechat_qr.jpg" alt="微信收款码" style="width:100%;aspect-ratio:1;object-fit:contain;border-radius:8px;border:1px solid var(--border)">
+        <img src="wechat_qr.jpg" alt="微信收款码" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border)">
       </div>
     </div>
     <div style="font-size:12px;color:var(--text3);margin-top:10px;text-align:center">打开支付宝或微信扫一扫即可赞助支持</div>
@@ -871,7 +814,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <svg viewBox="0 0 24 24" width="30" height="30" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
       </div>
       <div style="flex:1">
-        <div style="font-size:14px;font-weight:600;color:var(--text)">qq联系苦瓜大王</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">QQ交流群 / 联系作者</div>
         <div style="font-size:12px;color:var(--text3);margin-top:2px">问题反馈 · 功能建议 · 交易交流</div>
         <div style="font-size:16px;font-weight:700;color:var(--accent);margin-top:4px;background:var(--bg2);padding:6px 12px;border-radius:6px;display:inline-block">3064376057</div>
         <div style="font-size:11px;color:var(--text3);margin-top:4px">QQ号，长按复制后添加好友</div>
@@ -932,21 +875,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="toast-container" id="toast-container"></div>
 
 <!-- ===== Image Lightbox ===== -->
-<div class="modal-overlay" id="image-lightbox" style="display:none;background:rgba(0,0,0,.9);z-index:5000">
-  <div id="lightbox-wrapper" style="width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none;cursor:grab" onclick="closeImageLightbox()">
-    <img id="lightbox-image" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;transform-origin:center center;transition:transform .15s ease" onclick="event.stopPropagation()" ondblclick="event.stopPropagation();toggleZoom(event)">
+<div class="modal-overlay" id="image-lightbox" style="display:none;background:rgba(0,0,0,.9);z-index:5000;cursor:pointer" onclick="closeImageLightbox()">
+  <div style="max-width:95vw;max-height:95vh;display:flex;align-items:center;justify-content:center">
+    <img id="lightbox-image" style="max-width:100%;max-height:95vh;object-fit:contain;border-radius:8px">
   </div>
-  <!-- Top close button -->
-  <button class="modal-close" style="position:fixed;top:20px;right:20px;color:#fff;font-size:32px;z-index:5001;background:rgba(0,0,0,.5);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="event.stopPropagation();closeImageLightbox()">✕</button>
-  <!-- Bottom zoom controls -->
-  <div id="lightbox-zoom-controls" style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);display:flex;gap:6px;align-items:center;z-index:5001;background:rgba(0,0,0,.5);padding:6px 12px;border-radius:20px">
-    <button onclick="event.stopPropagation();zoomImage(0.5)" style="color:#fff;background:transparent;border:none;font-size:20px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
-    <span id="zoom-level" style="color:#fff;font-size:13px;min-width:40px;text-align:center">100%</span>
-    <button onclick="event.stopPropagation();zoomImage(2)" style="color:#fff;background:transparent;border:none;font-size:20px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
-    <button onclick="event.stopPropagation();resetZoom()" style="color:#fff;background:transparent;border:none;font-size:14px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center" title="重置">↺</button>
-  </div>
-  <!-- Image counter (moved from navigation) -->
-  <span id="lightbox-counter-fixed" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);color:#fff;font-size:14px;background:rgba(0,0,0,.5);padding:4px 12px;border-radius:12px;z-index:5001"></span>
+  <button class="modal-close" style="position:fixed;top:20px;right:20px;color:#fff;font-size:32px;z-index:5001;background:rgba(0,0,0,.5);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center" onclick="event.stopPropagation();closeImageLightbox()">✕</button>
 </div>
 
 <script>
@@ -957,9 +890,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 // ===== State Management =====
 const STATE_KEY = 'tradelens_data';
 const SETTINGS_KEY = 'tradelens_settings';
-
-// ===== Market Filter =====
-let selectedMarket = '';
 
 let trades = [];
 let settings = {
@@ -976,11 +906,11 @@ let settings = {
 let editingTradeId = null;
 let calendarDate = new Date();
 let selectedCalendarDay = null;
-let uploadedImagesData = [];
+let uploadedImageData = null;
 
 // ===== Init =====
-async function init() {
-  await loadState();
+function init() {
+  loadState();
   applyTheme();
   applyCurrency();
   renderDashboard();
@@ -1104,40 +1034,19 @@ async function loadFromServer() {
 }
 
 // ===== Data Persistence =====
-async function loadState() {
+function loadState() {
   try {
+    const saved = localStorage.getItem(STATE_KEY);
+    if (saved) trades = JSON.parse(saved);
     const savedSettings = localStorage.getItem(SETTINGS_KEY);
     if (savedSettings) settings = JSON.parse(savedSettings);
-    
-    // If using IndexedDB, load from there
-    if (localStorage.getItem('tradelens_use_idb') === '1') {
-      try { trades = await idbLoadAll(); } catch(e) { trades = []; }
-    } else {
-      const saved = localStorage.getItem(STATE_KEY);
-      if (saved) trades = JSON.parse(saved);
-    }
   } catch(e) { trades = []; }
 }
 
-async function saveState() {
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-    localStorage.setItem(STATE_KEY, JSON.stringify(trades));
-    localStorage.removeItem('tradelens_use_idb');
-  } catch(e) {
-    // localStorage full - use IndexedDB instead
-    try {
-      localStorage.removeItem(STATE_KEY);
-      await idbSaveAll(trades);
-      localStorage.setItem('tradelens_use_idb', '1');
-      // Settings still save to localStorage (small data)
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      showToast('✅ 已切换到高容量存储，可保存更多图片', 'success');
-    } catch(e2) {
-      console.warn('存储失败:', e2.message);
-      showToast('⚠️ 存储空间不足，请导出数据备份', 'error');
-    }
-  }
+function saveState() {
+  localStorage.setItem(STATE_KEY, JSON.stringify(trades));
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  // 自动同步到服务器（如果服务器模式）
   syncToServer();
 }
 
@@ -1192,13 +1101,6 @@ function toggleCurrency() {
   renderCalendar();
 }
 
-function toggleSupportCard() {
-  var body = document.getElementById('support-body');
-  var toggle = document.getElementById('support-toggle');
-  body.classList.toggle('open');
-  toggle.classList.toggle('open');
-}
-
 function formatPnl(pnl) {
   if (pnl === undefined || pnl === null) return '-';
   const isCNY = settings.currency === 'CNY';
@@ -1208,70 +1110,14 @@ function formatPnl(pnl) {
   return `${prefix}${symbol}${val.toFixed(2)}`;
 }
 
-// ===== IndexedDB Storage (for large data when localStorage is full) =====
-const DB_NAME = "TradeLensDB";
-const DB_STORE = "trades";
+// ===== Dashboard =====
 
-function openIDB() {
-  return new Promise(function(resolve, reject) {
-    var req = indexedDB.open(DB_NAME, 1);
-    req.onupgradeneeded = function(e) {
-      var db = e.target.result;
-      if (!db.objectStoreNames.contains(DB_STORE)) {
-        db.createObjectStore(DB_STORE, { keyPath: "id" });
-      }
-    };
-    req.onsuccess = function(e) { resolve(e.target.result); };
-    req.onerror = function(e) { reject(e.target.error); };
-  });
-}
-
-function idbSaveAll(data) {
-  return new Promise(function(resolve, reject) {
-    openIDB().then(function(db) {
-      var tx = db.transaction(DB_STORE, "readwrite");
-      var store = tx.objectStore(DB_STORE);
-      store.clear();
-      for (var i = 0; i < data.length; i++) { store.put(data[i]); }
-      tx.oncomplete = function() { resolve(); };
-      tx.onerror = function(e) { reject(e.target.error); };
-    }).catch(function(e) { reject(e); });
-  });
-}
-
-function idbLoadAll() {
-  return new Promise(function(resolve, reject) {
-    openIDB().then(function(db) {
-      var tx = db.transaction(DB_STORE, "readonly");
-      var store = tx.objectStore(DB_STORE);
-      var req = store.getAll();
-      req.onsuccess = function() { resolve(req.result || []); };
-      req.onerror = function(e) { reject(e.target.error); };
-    }).catch(function(e) { reject(e); });
-  });
-}
-
-function clearIDB() {
-  try { var req = indexedDB.deleteDatabase(DB_NAME); } catch(e) {}
-}
-
-
-// ===== Image Compression =====
-function compressImage(dataUrl, maxW, quality) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload = function() {
-      let w = img.width, h = img.height;
-      if (w > maxW) { h = h * maxW / w; w = maxW; }
-      if (h > maxW) { w = w * maxW / h; h = maxW; }
-      const c = document.createElement('canvas');
-      c.width = w; c.height = h;
-      const ctx = c.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      resolve(c.toDataURL('image/jpeg', quality));
-    };
-    img.src = dataUrl;
-  });
+// ===== Toggle Support Card =====
+function toggleSupportCard() {
+  var body = document.getElementById('support-body');
+  var toggle = document.getElementById('support-toggle');
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
 }
 function renderDashboard() {
   const count = trades.length;
@@ -1352,7 +1198,7 @@ function renderDashboard() {
   // Recent trades
   const recent = sorted.slice(0, 5);
   document.getElementById('dash-recent-trades').innerHTML = recent.map(t => {
-    const grade = getDisplayGrade(t);
+    const grade = computeGrade(t);
     const pendingBadge = t.reviewStatus === 'pending' ? '<span style="font-size:9px;padding:1px 5px;background:var(--orange-badge);color:#fff;border-radius:6px;margin-left:4px">待复盘</span>' : '';
     return `<div class="trade-item" onclick="showTradeDetail('${t.id}')">
       <div class="row1">
@@ -1438,7 +1284,7 @@ function renderTradeList() {
   const sorted = [...filtered].sort((a,b) => (b.closeDate||b.openDate||'').localeCompare(a.closeDate||a.openDate||''));
   
   container.innerHTML = sorted.map(t => {
-    const grade = getDisplayGrade(t);
+    const grade = computeGrade(t);
     const pendingBadge = t.reviewStatus === 'pending' ? '<span style="font-size:9px;padding:1px 5px;background:var(--orange-badge);color:#fff;border-radius:6px;margin-left:4px">待复盘</span>' : '';
     return `<div class="trade-item" onclick="showTradeDetail('${t.id}')">
       <div class="row1">
@@ -1449,14 +1295,6 @@ function renderTradeList() {
           <span class="direction ${t.direction === 'Long' ? 'direction-long' : 'direction-short'}">${t.direction === 'Long' ? '做多' : '做空'}</span>
           <span class="grade-badge grade-${grade}" style="margin-left:6px">${grade}</span>
         </span>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:2px;margin:6px 0 4px 0;padding:4px 8px;background:var(--bg3);border-radius:6px;justify-content:space-around">
-        <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">持仓</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.positionSize || "-"}</div></div>
-        <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">保证金</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.marginAmt || "-"}</div></div>
-        <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">杠杆</div><div style="font-size:13px;font-weight:600;color:var(--accent);white-space:nowrap">${t.leverage ? t.leverage + "x" : "-"}</div></div>
-        <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">盈亏%</div><div style="font-size:13px;font-weight:600;white-space:nowrap;color:${t.pnlPercent > 0 ? "var(--profit)" : "var(--loss)"}">${t.pnlPercent ? (t.pnlPercent > 0 ? "+" : "") + t.pnlPercent + "%" : "-"}</div></div>
-        <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">盈亏比</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.riskRewardRatio || "-"}</div></div>
-        <div style="text-align:center;padding:2px 4px"><div style="font-size:9px;color:var(--text3);white-space:nowrap">持仓时间</div><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap">${t.holdDuration || "-"}</div></div>
       </div>
       <div class="row2">
         <span>${t.closeDate || t.openDate || ''} · ${t.product || ''}</span>
@@ -1569,7 +1407,7 @@ function selectCalendarDay(dateStr) {
   const dayPnl = dayTrades.reduce((s, t) => s + (t.pnl || 0), 0);
   container.innerHTML = `<div style="margin-bottom:8px;font-size:14px">📅 ${dateStr} · 共 ${dayTrades.length} 笔 · 盈亏: <strong class="${dayPnl >= 0 ? 'profit' : 'loss'}">${formatPnl(dayPnl)}</strong></div>
     ${dayTrades.map(t => {
-      const grade = getDisplayGrade(t);
+      const grade = computeGrade(t);
       return `<div class="trade-item" onclick="showTradeDetail('${t.id}')" style="padding:8px 12px">
         <div class="row1">
           <span class="symbol" style="font-size:14px">${t.symbol || '?'}</span>
@@ -1606,20 +1444,13 @@ function openEditTrade(id) {
   document.getElementById('t-form-open-date').value = t.openDate ? t.openDate.slice(0, 16) : '';
   document.getElementById('t-form-close-date').value = t.closeDate ? t.closeDate.slice(0, 16) : '';
   document.getElementById('t-form-notes').value = t.notes || '';
-
-  document.getElementById("t-form-leverage").value = t.leverage || "";
-  document.getElementById("t-form-pnl-pct").value = t.pnlPercent || "";
-  document.getElementById("t-form-rrr").value = t.riskRewardRatio || "";
-  document.getElementById("t-form-hold").value = t.holdDuration || "";
-  document.getElementById("t-form-pos-size").value = t.positionSize || "";
-  document.getElementById("t-form-margin-amt").value = t.marginAmt || "";
-  document.getElementById("t-form-grade").value = t.grade || "";  
+  
   // Set checkboxes
   setCheckboxGroup('signals-grid', t.signals || []);
   setCheckboxGroup('emotions-grid', t.emotions || []);
   setCheckboxGroup('errors-grid', t.errors || []);
   
-  uploadedImagesData = t.imageData ? (t.imageData.includes('||IMG_SEP||') ? t.imageData.split('||IMG_SEP||') : [t.imageData]) : [];
+  uploadedImageData = t.imageData || null;
   renderImagePreview();
   
   document.getElementById('trade-modal').style.display = 'flex';
@@ -1628,13 +1459,12 @@ function openEditTrade(id) {
 function closeTradeModal() {
   document.getElementById('trade-modal').style.display = 'none';
   editingTradeId = null;
-  uploadedImagesData = [];
+  uploadedImageData = null;
 }
 
 function clearTradeForm() {
-  ['t-form-symbol','t-form-entry','t-form-exit','t-form-qty','t-form-pnl','t-form-notes','t-form-leverage','t-form-pnl-pct','t-form-rrr','t-form-hold','t-form-pos-size','t-form-margin-amt'].forEach(id => document.getElementById(id).value = '');
+  ['t-form-symbol','t-form-entry','t-form-exit','t-form-qty','t-form-pnl','t-form-notes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('t-form-direction').value = 'Long';
-  document.getElementById('t-form-grade').value = '';
   document.getElementById('t-form-exchange').value = 'Binance';
   document.getElementById('t-form-product').value = '永续合约';
   const now = new Date();
@@ -1645,7 +1475,7 @@ function clearTradeForm() {
   document.querySelectorAll('#signals-grid input, #emotions-grid input, #errors-grid input').forEach(cb => cb.checked = false);
   document.querySelectorAll('.checkbox-item').forEach(item => item.classList.remove('active'));
   
-  uploadedImagesData = [];
+  uploadedImageData = null;
   document.getElementById('image-preview-container').innerHTML = '';
   document.getElementById('t-form-image').value = '';
 }
@@ -1672,40 +1502,29 @@ function setupCheckboxGrids() {
     });
   });
   
-  // Image upload - multi-image with compression
-  document.getElementById('t-form-image').addEventListener('change', async function(e) {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
-    for (const file of files) {
-      const dataUrl = await new Promise(resolve => {
-        const reader = new FileReader();
-        reader.onload = ev => resolve(ev.target.result);
-        reader.readAsDataURL(file);
-      });
-      const compressed = await compressImage(dataUrl, 900, 0.5);
-      uploadedImagesData.push(compressed);
-    }
-    this.value = '';
-    renderImagePreview();
+  // Image upload
+  document.getElementById('t-form-image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      uploadedImageData = ev.target.result;
+      renderImagePreview();
+    };
+    reader.readAsDataURL(file);
   });
 }
 
 function renderImagePreview() {
   const container = document.getElementById('image-preview-container');
-  if (uploadedImagesData.length === 0) {
+  if (uploadedImageData) {
+    container.innerHTML = `<img src="${uploadedImageData}" class="image-preview" onclick="window.open(this.src)"><div style="font-size:11px;color:var(--text3);cursor:pointer" onclick="uploadedImageData=null;renderImagePreview();document.getElementById('t-form-image').value=''">✕ 移除</div>`;
+  } else {
     container.innerHTML = '';
-    return;
   }
-  container.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:8px">' + uploadedImagesData.map((src, i) =>
-    '<div style="position:relative;width:80px;height:80px;border-radius:6px;overflow:hidden;border:1px solid var(--border);flex-shrink:0">' +
-    '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;cursor:pointer" onclick="showImageLightbox(uploadedImagesData, ' + i + ')">' +
-    '<div style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="event.stopPropagation();uploadedImagesData.splice(' + i + ',1);renderImagePreview()">✕</div>' +
-    '</div>'
-  ).join('') + '</div>';
 }
 
 function saveTrade() {
-  try {
   const symbol = document.getElementById('t-form-symbol').value.trim().toUpperCase();
   if (!symbol) { showToast('请输入交易品种', 'error'); return; }
   
@@ -1727,18 +1546,11 @@ function saveTrade() {
     product: document.getElementById('t-form-product').value,
     openDate: document.getElementById('t-form-open-date').value || '',
     closeDate: document.getElementById('t-form-close-date').value || '',
-        leverage: parseFloat(document.getElementById("t-form-leverage").value) || 0,
-    pnlPercent: parseFloat(document.getElementById("t-form-pnl-pct").value) || 0,
-    riskRewardRatio: parseFloat(document.getElementById("t-form-rrr").value) || 0,
-    holdDuration: document.getElementById("t-form-hold").value.trim(),
-    positionSize: parseFloat(document.getElementById("t-form-pos-size").value) || 0,
-    marginAmt: parseFloat(document.getElementById("t-form-margin-amt").value) || 0,
-    grade: document.getElementById("t-form-grade").value || "",
     notes: document.getElementById('t-form-notes').value.trim(),
     signals: signals,
     emotions: emotions,
     errors: errors,
-    imageData: uploadedImagesData.length > 0 ? uploadedImagesData.join('||IMG_SEP||') : null,
+    imageData: uploadedImageData || null,
     reviewStatus: editingTradeId ? (trades.find(t => t.id === editingTradeId)?.reviewStatus || '') : '',
     reviewNotes: editingTradeId ? (trades.find(t => t.id === editingTradeId)?.reviewNotes || '') : '',
     updatedAt: new Date().toISOString()
@@ -1758,10 +1570,7 @@ function saveTrade() {
   renderCalendar();
   populateFilterSymbols();
   updateCounts();
-  showToast(editingTradeId ? '交易已更新' : '交易已保存', 'success');  } catch(e) {
-    console.error('保存失败:', e);
-    showToast('⚠️ 保存失败: ' + e.message, 'error');
-  }
+  showToast(editingTradeId ? '交易已更新' : '交易已保存', 'success');
 }
 
 function generateId() {
@@ -1773,7 +1582,7 @@ function showTradeDetail(id) {
   const t = trades.find(x => x.id === id);
   if (!t) return;
   
-  const grade = getDisplayGrade(t);
+  const grade = computeGrade(t);
   document.getElementById('detail-title').textContent = `${t.symbol || '?'} 交易详情`;
   
   let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
@@ -1801,11 +1610,8 @@ function showTradeDetail(id) {
   
   html += `</table>`;
   
-    if (t.imageData) {
-    const imgList = t.imageData.split('||IMG_SEP||');
-    html += `<div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px">${imgList.map(function(src) {
-      return `<img src="${src}" style="width:calc(50% - 4px);max-height:300px;object-fit:contain;border-radius:8px;border:1px solid var(--border);cursor:pointer" onclick="viewImage('${src}')">`;
-    }).join('')}</div>`;
+  if (t.imageData) {
+    html += `<div style="margin-top:12px"><img src="${t.imageData}" style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;border:1px solid var(--border);cursor:pointer" onclick="viewImage('${t.imageData}')"></div>`;
   }
   
   html += `<div style="display:flex;gap:8px;margin-top:16px">
@@ -1894,235 +1700,17 @@ function deleteTrade(id) {
 }
 
 // ===== Image Lightbox =====
-let zoomLevel = 1;
-const ZOOM_MIN = 0.25;
-const ZOOM_MAX = 8;
-const ZOOM_STEP = 1.5;
-let panX = 0, panY = 0;
-let dragStartX = 0, dragStartY = 0;
-let isDragging = false;
-
-function applyZoom() {
-  const img = document.getElementById('lightbox-image');
-  if (zoomLevel > 1) {
-    img.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoomLevel + ')';
-  } else {
-    panX = 0; panY = 0;
-    img.style.transform = 'scale(1)';
-  }
-  const pct = Math.round(zoomLevel * 100);
-  const el = document.getElementById('zoom-level');
-  if (el) el.textContent = pct + '%';
-}
-
-function zoomImage(factor) {
-  zoomLevel = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoomLevel * factor));
-  applyZoom();
-}
-
-function resetZoom() {
-  zoomLevel = 1;
-  panX = 0; panY = 0;
-  applyZoom();
-}
-
-function toggleZoom(e) {
-  if (zoomLevel === 1) {
-    zoomLevel = 2.5;
-  } else {
-    zoomLevel = 1;
-  }
-  applyZoom();
-}
-
-// Track pinch-to-zoom
-let lastPinchDist = 0;
-let isPinching = false;
-
-function getTouchDistance(touches) {
-  if (touches.length < 2) return 0;
-  const dx = touches[0].clientX - touches[1].clientX;
-  const dy = touches[0].clientY - touches[1].clientY;
-  return Math.sqrt(dx*dx + dy*dy);
-}
-
-function showImageLightbox(images, index) {
-  const lightbox = document.getElementById('image-lightbox');
-  const img = document.getElementById('lightbox-image');
-  
-  // Reset zoom for new image
-  resetZoom();
-  
-  img.src = images[index];
-  
-  // Setup navigation buttons if not already done
-  const wrapper = document.getElementById('lightbox-wrapper');
-  let navContainer = document.getElementById('lightbox-nav');
-  if (!navContainer) {
-    navContainer = document.createElement('div');
-    navContainer.id = 'lightbox-nav';
-    navContainer.style.cssText = 'position:fixed;bottom:40px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:5002';
-    document.body.appendChild(navContainer);
-    
-    const prevBtn = document.createElement('button');
-    prevBtn.innerHTML = '‹';
-    prevBtn.title = '上一张';
-    prevBtn.style.cssText = 'background:rgba(0,0,0,.5);color:#fff;border:none;font-size:32px;width:48px;height:48px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center';
-    prevBtn.onclick = function(e) { e.stopPropagation(); navigateLightbox(-1); };
-    navContainer.appendChild(prevBtn);
-    
-    const nextBtn = document.createElement('button');
-    nextBtn.innerHTML = '›';
-    nextBtn.title = '下一张';
-    nextBtn.style.cssText = 'background:rgba(0,0,0,.5);color:#fff;border:none;font-size:32px;width:48px;height:48px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center';
-    nextBtn.onclick = function(e) { e.stopPropagation(); navigateLightbox(1); };
-    navContainer.appendChild(nextBtn);
-  }
-  navContainer.style.display = images.length > 1 ? 'flex' : 'none';
-  
-  // Mouse wheel zoom
-  wrapper.onwheel = function(e) {
-    e.preventDefault();
-    if (e.deltaY < 0) zoomImage(ZOOM_STEP);
-    else zoomImage(1/ZOOM_STEP);
-  };
-  
-  // Touch events for pinch zoom + pan drag
-  let touchPanX = 0, touchPanY = 0;
-  wrapper.ontouchstart = function(e) {
-    if (e.touches.length === 2) {
-      e.preventDefault();
-      isPinching = true;
-      lastPinchDist = getTouchDistance(e.touches);
-    } else if (e.touches.length === 1 && zoomLevel > 1) {
-      // Single finger drag for pan
-      touchPanX = e.touches[0].clientX - panX;
-      touchPanY = e.touches[0].clientY - panY;
-    }
-  };
-  wrapper.ontouchmove = function(e) {
-    if (e.touches.length === 2 && isPinching) {
-      e.preventDefault();
-      const dist = getTouchDistance(e.touches);
-      if (lastPinchDist > 0) {
-        const ratio = dist / lastPinchDist;
-        zoomImage(ratio);
-      }
-      lastPinchDist = dist;
-    } else if (e.touches.length === 1 && zoomLevel > 1) {
-      e.preventDefault();
-      panX = e.touches[0].clientX - touchPanX;
-      panY = e.touches[0].clientY - touchPanY;
-      applyZoom();
-    }
-  };
-  // Track last tap time for double-tap zoom on mobile
-  let lastTapTime = 0;
-  wrapper.ontouchstart = function(e) {
-    if (e.touches.length === 2) {
-      e.preventDefault();
-      isPinching = true;
-      lastPinchDist = getTouchDistance(e.touches);
-    } else if (e.touches.length === 1 && zoomLevel > 1) {
-      // Single finger drag for pan
-      touchPanX = e.touches[0].clientX - panX;
-      touchPanY = e.touches[0].clientY - panY;
-    } else if (e.touches.length === 1 && zoomLevel === 1) {
-      // Double-tap to zoom on mobile
-      const now = Date.now();
-      if (now - lastTapTime < 300) {
-        e.preventDefault();
-        toggleZoom();
-        lastTapTime = 0;
-        return;
-      }
-      lastTapTime = now;
-    }
-  };
-  wrapper.ontouchmove = function(e) {
-    if (e.touches.length === 2 && isPinching) {
-      e.preventDefault();
-      const dist = getTouchDistance(e.touches);
-      if (lastPinchDist > 0) {
-        const ratio = dist / lastPinchDist;
-        zoomImage(ratio);
-      }
-      lastPinchDist = dist;
-    } else if (e.touches.length === 1 && zoomLevel > 1) {
-      e.preventDefault();
-      panX = e.touches[0].clientX - touchPanX;
-      panY = e.touches[0].clientY - touchPanY;
-      applyZoom();
-    }
-  };
-  wrapper.ontouchend = function(e) {
-    if (e.touches.length < 2) {
-      isPinching = false;
-      lastPinchDist = 0;
-    }
-  };
-  
-  // Mouse drag for pan (when zoomed)
-  wrapper.onmousedown = function(e) {
-    if (zoomLevel === 1) return;
-    isDragging = true;
-    dragStartX = e.clientX - panX;
-    dragStartY = e.clientY - panY;
-    wrapper.style.cursor = 'grabbing';
-  };
-  document.onmousemove = function(e) {
-    if (!isDragging) return;
-    panX = e.clientX - dragStartX;
-    panY = e.clientY - dragStartY;
-    applyZoom();
-  };
-  document.onmouseup = function(e) {
-    if (isDragging) {
-      isDragging = false;
-      wrapper.style.cursor = 'grab';
-      document.onmousemove = null;
-      document.onmouseup = null;
-    }
-  };
-  
-
-  
-  img.dataset.imgIndex = index;
-  img.dataset.imgList = JSON.stringify(images);
-  const counterSpan = document.getElementById('lightbox-counter-fixed');
-  if (counterSpan) counterSpan.textContent = (index+1) + '/' + images.length;
-  lightbox.style.display = 'flex';
-}
-
-function navigateLightbox(direction) {
-  const img = document.getElementById('lightbox-image');
-  const currentIndex = parseInt(img.dataset.imgIndex || '0');
-  const images = JSON.parse(img.dataset.imgList || '[]');
-  if (images.length === 0) return;
-  const newIndex = (currentIndex + direction + images.length) % images.length;
-  showImageLightbox(images, newIndex);
-}
-
 function viewImage(src) {
-  showImageLightbox([src], 0);
+  document.getElementById('lightbox-image').src = src;
+  document.getElementById('image-lightbox').style.display = 'flex';
 }
-
 function closeImageLightbox() {
   document.getElementById('image-lightbox').style.display = 'none';
-  resetZoom();
 }
 
 // ===== Grade Computation =====
-function getDisplayGrade(trade) {
-  // Always use manual grade if explicitly set
-  if (trade && trade.grade && ['A', 'B', 'C', 'D'].includes(trade.grade)) return trade.grade;
-  return computeGrade(trade);
-}
 function computeGrade(trade) {
-  if (!trade) return 'D';
-  // If user manually set a grade, use it instead of auto-compute
-  if (trade.grade && ['A', 'B', 'C', 'D'].includes(trade.grade)) return trade.grade;
-  if (trade.pnl === undefined || trade.pnl === null) return 'D';
+  if (!trade || trade.pnl === undefined || trade.pnl === null) return 'D';
   const pnl = trade.pnl;
   const hasErrors = trade.errors && trade.errors.length > 0;
   const hasSignal = trade.signals && trade.signals.length > 0;
@@ -2897,36 +2485,6 @@ function showDebug(div, text, type) {
 }
 
 // ===== Data Export/Import =====
-function selectMarket(market) {
-  if (selectedMarket === market) {
-    selectedMarket = '';
-    document.querySelectorAll('.market-btn').forEach(b => b.classList.remove('active'));
-  } else {
-    selectedMarket = market;
-    document.querySelectorAll('.market-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.market === market);
-    });
-  }
-}
-
-function saveToBrowser() {
-  saveState();
-  showToast('✅ 数据已保存到本地浏览器', 'success');
-}
-
-function syncFromBrowser() {
-  loadState();
-  renderDashboard();
-  renderTradeList();
-  renderCalendar();
-  populateFilterSymbols();
-  updateCounts();
-  const pending = getPendingReviewCount();
-  if (pending > 0) showToast('📋 你有' + pending + '笔交易待复盘', 'info');
-  showToast('✅ 已从浏览器同步 ' + trades.length + ' 条交易', 'success');
-}
-
-
 function exportData() {
   const data = JSON.stringify(trades, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
@@ -2969,9 +2527,6 @@ function clearAllData() {
   if (!confirm('确定要清除所有交易数据吗？此操作不可撤销！')) return;
   if (!confirm('再次确认：清除所有数据？')) return;
   trades = [];
-  localStorage.removeItem(STATE_KEY);
-  localStorage.removeItem('tradelens_use_idb');
-  clearIDB();
   saveState();
   renderDashboard();
   renderTradeList();
@@ -2985,14 +2540,14 @@ function clearAllData() {
 function loadSampleData() {
   const now = new Date();
   const sampleTrades = [
-    { id: generateId(), symbol:'BTCUSDT', direction:'Long', entryPrice:67500, exitPrice:68900, qty:0.5, pnl:700, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -30), closeDate:dateStr(now, -28), signals:['BOS','FVG'], emotions:['冷静','自信'], errors:[], leverage:10, pnlPercent:2.07, riskRewardRatio:3.0, holdDuration:'3h30m', positionSize:0.5, marginAmt:3375, grade:'', notes:'BTC突破前高形成BOS，FVG回补后入场', updatedAt:now.toISOString() },
-    { id: generateId(), symbol:'ETHUSDT', direction:'Short', entryPrice:3520, exitPrice:3380, qty:2, pnl:280, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -25), closeDate:dateStr(now, -23), signals:['Order Block','Killzone'], emotions:['冷静'], errors:[], leverage:15, pnlPercent:3.98, riskRewardRatio:2.5, holdDuration:'2h', positionSize:2, marginAmt:469, grade:'', notes:'伦敦Killzone，OB被测试后反转做空', updatedAt:now.toISOString() },
-    { id: generateId(), symbol:'SOLUSDT', direction:'Long', entryPrice:142, exitPrice:138, qty:5, pnl:-200, exchange:'OKX', product:'永续合约', openDate:dateStr(now, -20), closeDate:dateStr(now, -18), signals:['Silver Bullet'], emotions:['急躁','FOMO'], errors:['过早止损','FOMO','扛单'], leverage:10, pnlPercent:-2.82, riskRewardRatio:0, holdDuration:'45m', positionSize:5, marginAmt:710, grade:'', notes:'银弹信号入场后被过早止损，随后行情启动', updatedAt:now.toISOString() },
-    { id: generateId(), symbol:'BTCUSDT', direction:'Short', entryPrice:69500, exitPrice:68200, qty:0.3, pnl:390, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -15), closeDate:dateStr(now, -14), signals:['CHoCH','Premium-Discount'], emotions:['冷静','自信'], errors:[], leverage:10, pnlPercent:1.87, riskRewardRatio:2.8, holdDuration:'5h', positionSize:0.3, marginAmt:2085, grade:'', notes:'4H级别CHoCH，价格处于溢价区，做空回折价区', updatedAt:now.toISOString() },
-    { id: generateId(), symbol:'ADAUSDT', direction:'Long', entryPrice:0.38, exitPrice:0.36, qty:1000, pnl:-200, exchange:'Binance', product:'现货', openDate:dateStr(now, -12), closeDate:dateStr(now, -10), signals:['Liquidity Sweep'], emotions:['贪婪','兴奋'], errors:['重仓','计划外交易','没等确认入场'], leverage:5, pnlPercent:-5.26, riskRewardRatio:0, holdDuration:'1h15m', positionSize:1000, marginAmt:76, grade:'', notes:'看到流动性扫荡后冲动入场，没有等POI确认', updatedAt:now.toISOString() },
-    { id: generateId(), symbol:'DOGEUSDT', direction:'Long', entryPrice:0.085, exitPrice:0.092, qty:5000, pnl:350, exchange:'OKX', product:'永续合约', openDate:dateStr(now, -8), closeDate:dateStr(now, -6), signals:['MSS','供需区'], emotions:['冷静'], errors:[], leverage:20, pnlPercent:8.24, riskRewardRatio:4.0, holdDuration:'6h', positionSize:5000, marginAmt:21.25, grade:'', notes:'MSS确认后回踩供需区入场', updatedAt:now.toISOString() },
-    { id: generateId(), symbol:'LINKUSDT', direction:'Short', entryPrice:18.5, exitPrice:19.2, qty:30, pnl:-210, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -5), closeDate:dateStr(now, -3), signals:['IFVG','Wyckoff'], emotions:['犹豫','后悔'], errors:['晚止损','逆势','忽略大趋势'], leverage:10, pnlPercent:-3.78, riskRewardRatio:0, holdDuration:'2h20m', positionSize:30, marginAmt:55.5, grade:'', notes:'逆势做空，IFVG失败后没有及时止损，忽略了大趋势方向', updatedAt:now.toISOString() },
-    { id: generateId(), symbol:'ETHUSDT', direction:'Long', entryPrice:3450, exitPrice:3580, qty:1.5, pnl:195, exchange:'OKX', product:'永续合约', openDate:dateStr(now, -2), closeDate:dateStr(now, -1), signals:['OTE','POI','供需区'], emotions:['冷静','满意'], errors:[], leverage:12, pnlPercent:3.77, riskRewardRatio:3.5, holdDuration:'1h', positionSize:1.5, marginAmt:431.25, grade:'', notes:'亚洲Killzone出现POI，OTE区域完美入场', updatedAt:now.toISOString() }
+    { id: generateId(), symbol:'BTCUSDT', direction:'Long', entryPrice:67500, exitPrice:68900, qty:0.5, pnl:700, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -30), closeDate:dateStr(now, -28), signals:['BOS','FVG'], emotions:['冷静','自信'], errors:[], notes:'BTC突破前高形成BOS，FVG回补后入场', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'ETHUSDT', direction:'Short', entryPrice:3520, exitPrice:3380, qty:2, pnl:280, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -25), closeDate:dateStr(now, -23), signals:['Order Block','Killzone'], emotions:['冷静'], errors:[], notes:'伦敦Killzone，OB被测试后反转做空', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'SOLUSDT', direction:'Long', entryPrice:142, exitPrice:138, qty:5, pnl:-200, exchange:'OKX', product:'永续合约', openDate:dateStr(now, -20), closeDate:dateStr(now, -18), signals:['Silver Bullet'], emotions:['急躁','FOMO'], errors:['过早止损','FOMO','扛单'], notes:'银弹信号入场后被过早止损，随后行情启动', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'BTCUSDT', direction:'Short', entryPrice:69500, exitPrice:68200, qty:0.3, pnl:390, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -15), closeDate:dateStr(now, -14), signals:['CHoCH','Premium-Discount'], emotions:['冷静','自信'], errors:[], notes:'4H级别CHoCH，价格处于溢价区，做空回折价区', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'ADAUSDT', direction:'Long', entryPrice:0.38, exitPrice:0.36, qty:1000, pnl:-200, exchange:'Binance', product:'现货', openDate:dateStr(now, -12), closeDate:dateStr(now, -10), signals:['Liquidity Sweep'], emotions:['贪婪','兴奋'], errors:['重仓','计划外交易','没等确认入场'], notes:'看到流动性扫荡后冲动入场，没有等POI确认', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'DOGEUSDT', direction:'Long', entryPrice:0.085, exitPrice:0.092, qty:5000, pnl:350, exchange:'OKX', product:'永续合约', openDate:dateStr(now, -8), closeDate:dateStr(now, -6), signals:['MSS','供需区'], emotions:['冷静'], errors:[], notes:'MSS确认后回踩供需区入场', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'LINKUSDT', direction:'Short', entryPrice:18.5, exitPrice:19.2, qty:30, pnl:-210, exchange:'Binance', product:'永续合约', openDate:dateStr(now, -5), closeDate:dateStr(now, -3), signals:['IFVG','Wyckoff'], emotions:['犹豫','后悔'], errors:['晚止损','逆势','忽略大趋势'], notes:'逆势做空，IFVG失败后没有及时止损，忽略了大趋势方向', updatedAt:now.toISOString() },
+    { id: generateId(), symbol:'ETHUSDT', direction:'Long', entryPrice:3450, exitPrice:3580, qty:1.5, pnl:195, exchange:'OKX', product:'永续合约', openDate:dateStr(now, -2), closeDate:dateStr(now, -1), signals:['OTE','POI','供需区'], emotions:['冷静','满意'], errors:[], notes:'亚洲Killzone出现POI，OTE区域完美入场', updatedAt:now.toISOString() }
   ];
   
   // Add current date trades
@@ -3084,7 +2639,6 @@ function setupAnalysisPage() {
   // Framework checkbox toggle styling
   document.querySelectorAll('.analysis-framework-item').forEach(item => {
     item.addEventListener('click', function(e) {
-      e.preventDefault();
       const cb = this.querySelector('input');
       cb.checked = !cb.checked;
       this.classList.toggle('active', cb.checked);
@@ -3160,15 +2714,13 @@ async function startAnalysis() {
   const fwNames = {
     ict: 'ICT (Smart Money Concepts)',
     pa: '价格行为学 (Price Action)',
-    candle: '日本蜡烛图技术 (Japanese Candlestick)',
-    chan: '缠论 (Chan Theory)',
-    dow: '道氏理论 (Dow Theory)',
-    elliott: '波浪理论 (Elliott Wave Theory)'
+    smc: 'SMC (Smart Money Concepts)',
+    harmonic: '谐波形态 (Harmonic Patterns)'
   };
   const fwList = frameworks.map(f => fwNames[f] || f).join('、');
 
   // Build system prompt
-  const systemPrompt = '你是一个专业的加密货币交易分析师，精通ICT、价格行为学、日本蜡烛图技术、缠论、道氏理论和波浪理论。请用中文回复。';
+  const systemPrompt = '你是一个专业的加密货币交易分析师，精通ICT、价格行为学、SMC和谐波形态。请用中文回复。';
 
   const prompt = `请分析这张交易截图，使用以下分析框架：${fwList}。
 
@@ -3310,7 +2862,7 @@ function displayAnalysisResult(rawResult, context, frameworks) {
   }
 
   // Get framework tags
-  const fwLabels = {ict: 'ICT', pa: '价格行为', candle: '蜡烛图', chan: '缠论', dow: '道氏', elliott: '波浪'};
+  const fwLabels = {ict: 'ICT', pa: '价格行为', smc: 'SMC', harmonic: '谐波'};
   const fwTags = frameworks.map(f => 
     `<span class="analysis-result-tag ${f}">${fwLabels[f] || f}</span>`
   ).join('');
@@ -3438,7 +2990,7 @@ function renderAnalysisHistory() {
     const date = new Date(item.timestamp);
     const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
     const pair = item.context || '截图分析';
-    const fwLabels = {ict: '🧠 ICT', pa: '📊 价格行为', candle: '🕯️ 蜡烛图', chan: '☯️ 缠论', dow: '📈 道氏', elliott: '🌊 波浪'};
+    const fwLabels = {ict: '🧠 ICT', pa: '📊 价格行为', smc: '🔄 SMC', harmonic: '🎯 谐波'};
     const fwText = (item.frameworks || []).map(f => fwLabels[f] || f).join(' ');
 
     // Extract direction from result
@@ -3508,7 +3060,7 @@ function showAnalysisDetail(index) {
     imgHtml = `<img src="${item.imageDataUrl}" class="analysis-preview-img" style="max-height:200px;margin-bottom:12px">`;
   }
 
-  const fwLabels = {ict: 'ICT', pa: '价格行为', candle: '蜡烛图', chan: '缠论', dow: '道氏', elliott: '波浪'};
+  const fwLabels = {ict: 'ICT', pa: '价格行为', smc: 'SMC', harmonic: '谐波'};
   const fwTags = (item.frameworks || []).map(f => 
     `<span class="analysis-result-tag ${f}">${fwLabels[f] || f}</span>`
   ).join('');
@@ -3562,11 +3114,12 @@ showPage = function(pageId) {
 };
 
 // Init analysis page on DOMContentLoaded
-// ===== Init on Load =====
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', function() {
   setupAnalysisPage();
-  await init();
 });
+
+// ===== Init on Load =====
+document.addEventListener('DOMContentLoaded', init);
 
 
 
@@ -3580,5 +3133,4 @@ document.addEventListener('DOMContentLoaded', async function() {
 <script src="analysis_temp.js"></script>
 </body>
 </html>
-
 
